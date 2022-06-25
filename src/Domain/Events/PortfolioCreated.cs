@@ -1,6 +1,6 @@
 using PocketCqrs;
 
-namespace Domain
+namespace Domain.Events
 {
     public class PortfolioCreated : IEvent
     {
