@@ -3,14 +3,13 @@ namespace Domain.ValueObjects;
 
 public class Investment
 {
-    public InvestmentType InvestmentType { get; set; }
-    public InvestmentGroup InvestmentGroup { get; set; }
-    public string Name { get; set; }
+    public string Name { get; private set; }
+    public InvestmentType Type { get; private set; }
 
-    public Investment(string name, InvestmentType type, InvestmentGroup group)
+    public Investment(string name, InvestmentType type)
     {
-        InvestmentType = type;
         Name = name;
-        InvestmentGroup = group;
+        Type = type;
     }
 }
+

@@ -2,7 +2,7 @@ using Domain;
 using Domain.ValueObjects;
 using FluentAssertions;
 
-namespace UnitTests;
+namespace DomainTests;
 
 public class PortfolioTests
 {
