@@ -6,7 +6,8 @@ namespace Domain.Events
     {
         public DateTime Date { get; set; }
         public string InvestmentId { get; set; }
-        public int Amount { get; set; }
+        public Guid TransactionId { get; set; }
+        public double Amount { get; set; }
         public decimal Price { get; set; }
         public decimal Fee { get; set; }
         public string Currency { get; set; }

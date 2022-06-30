@@ -31,7 +31,8 @@ public class AddTransactionCommandHandler : ICommandHandler<AddTransactionComman
         var portfolio = new Portfolio(stream.Events);
 
         portfolio.AddTransaction(
-            Transaction.CreateNew(new InvestmentId(cmd.InvestmentId),
+            Transaction.CreateNew(
+                new InvestmentId(cmd.InvestmentId),
                 cmd.Date,
                 cmd.Amount,
                 cmd.Price,

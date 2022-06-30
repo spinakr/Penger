@@ -9,7 +9,19 @@
 </head>
 
 <body>
-    <div class="">
+    <div>
+        <nav>
+            <span>
+                <a asp-page="/Index">Home</a>
+            </span>
+            <span>
+                <a asp-page="/Investments/Index">Investments</a>
+            </span>
+            <span>
+                <a asp-page="/Transactions/Index">Transactions</a>
+            </span>
+
+        </nav>
         <main role="main" class="pb-3">
             @RenderBody()
         </main>

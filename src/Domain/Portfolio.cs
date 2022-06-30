@@ -57,7 +57,9 @@ public class Portfolio : EventSourcedAggregate
         {
             Date = transaction.Date,
             InvestmentId = transaction.InvestmentId.Value,
+            TransactionId = transaction.TransactionId.Value,
             Amount = transaction.Amount,
+            Price = transaction.Price,
             Fee = transaction.Fee,
             Currency = transaction.Currency
         });
@@ -88,6 +90,7 @@ public class Portfolio : EventSourcedAggregate
     {
         Transactions.Add(new Transaction(
             new InvestmentId(@event.InvestmentId),
+            new TransactionId(@event.TransactionId),
             @event.Date,
             @event.Amount,
             @event.Price,

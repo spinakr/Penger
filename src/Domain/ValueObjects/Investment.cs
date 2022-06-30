@@ -26,5 +26,6 @@ public class Investment : ValueObject
         yield return Type;
         yield return Group;
     }
+
 }
 

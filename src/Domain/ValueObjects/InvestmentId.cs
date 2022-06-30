@@ -15,4 +15,9 @@ public class InvestmentId : ValueObject
     {
         yield return Value;
     }
+
+    public override string ToString()
+    {
+        return Value;
+    }
 }

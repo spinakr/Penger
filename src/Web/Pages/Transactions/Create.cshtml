@@ -1,0 +1,37 @@
+@page "{portfolioId=kofoed}"
+@model Transactions.Create
+@{
+    ViewData["Title"] = "Create Transaction";
+}
+
+<div>
+    <h1>Create Transaction </h1>
+
+    <form method="post">
+        <h3>Portfolio: @Model.Data.command.PortfolioId</h3>
+        @Html.HiddenFor(x => x.Data.command.PortfolioId)
+        <div>
+            @Html.DropDownList("Data.command.InvestmentId", Model.Data.InvestmentOptions)
+        </div>
+        <div>
+            <input asp-for="Data.command.Date" type="Date" placeholder="Date" />
+        </div>
+        <div>
+            <input asp-for="Data.command.Amount" type="text" placeholder="Amount" required pattern="^[1-9]\d*(\,\d+)?$"
+                title="Valid decimal number">
+        </div>
+        <div>
+            <input asp-for="Data.command.Price" type="text" placeholder="Price" required pattern="^[1-9]\d*(\,\d+)?$" />
+            <select asp-for="Data.command.Currency">
+                <option value="NOK" selected>NOK</option>
+                <option value="USD">USD</option>
+                <option value="EUR">EUR</option>
+            </select>
+        </div>
+        <br />
+        <div>
+            <input type="submit" value="Save" class="btn btn-primary" />
+            <a asp-page="/Transactions/Index">Back</a>
+        </div>
+    </form>
+</div>

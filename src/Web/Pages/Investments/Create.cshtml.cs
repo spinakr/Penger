@@ -39,7 +39,6 @@ public class Create : PageModel
     public class Command : ICommand
     {
         public string PortfolioId { get; set; }
-        [Display(Name = "Investment Name/Id")]
         public string InvestmentId { get; set; }
         public string InvestmentGroup { get; set; }
         public string InvestmentType { get; set; }
