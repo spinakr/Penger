@@ -2,6 +2,8 @@ using Domain;
 using PocketCqrs;
 using PocketCqrs.EventStore;
 
+namespace Web.Commands;
+
 public class CreatePortfolioCommand : ICommand
 {
 }
@@ -17,7 +19,7 @@ public class CreatePortfolioCommandHandler : ICommandHandler<CreatePortfolioComm
 
     public Result Handle(CreatePortfolioCommand cmd)
     {
-        var newPortfolio = Portfolio.CreateNew();
+        var newPortfolio = Portfolio.CreateNew("TEST");
         _eventStore.AppendToStream(newPortfolio.Id.ToString(), newPortfolio.PendingEvents, 0);
         return Result.Complete<string>(newPortfolio.Id);
     }

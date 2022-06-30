@@ -1,0 +1,33 @@
+@page "{portfolioId=kofoed}"
+@model Investments.Create
+@{
+    ViewData["Title"] = "Create Investment";
+}
+
+<div>
+    <h1>Create Investment </h1>
+
+    <form method="post">
+        <h3>Portfolio: @Model.Data.PortfolioId</h3>
+        @Html.HiddenFor(x => x.Data.PortfolioId)
+        <div>
+            <input asp-for="Data.InvestmentId" type="text" placeholder="Investment name / id" />
+        </div>
+
+        <div>
+            <select asp-for="Data.InvestmentGroup" asp-items="Model.InvestmentGroupOptions">
+                <option value="" selected>Investement group</option>
+            </select>
+        </div>
+        <div>
+            <select asp-for="Data.InvestmentType" asp-items="Model.InvestmentTypeOptions">
+                <option value="" selected>Investement type</option>
+            </select>
+        </div>
+        <br />
+        <div>
+            <input type="submit" value="Save" class="btn btn-primary" />
+            <a asp-page="/Investments/Index">Back</a>
+        </div>
+    </form>
+</div>

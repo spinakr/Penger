@@ -1,0 +1,20 @@
+@page "{portfolioId=kofoed}"
+@model Investments.Index
+@{
+    ViewData["Title"] = "Index";
+}
+
+<div>
+    <h1>Investments </h1>
+    <ul>
+        @foreach (var investment in Model.Data.Investments)
+        {
+            <li>
+                <a asp-page="/Investments/">
+                    @Html.DisplayFor(modelItem => investment.InvestmendId)
+                </a>
+            </li>
+        }
+    </ul>
+    <a asp-page="/Investments/Create">Create New</a>
+</div>

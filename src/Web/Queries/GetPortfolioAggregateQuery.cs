@@ -2,6 +2,8 @@ using Domain;
 using PocketCqrs;
 using PocketCqrs.EventStore;
 
+namespace Web.Queries;
+
 public class GetPortfolioAggregateQuery : IQuery<Portfolio>
 {
     public string? PortfolioId { get; set; }

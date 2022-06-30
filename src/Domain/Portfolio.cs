@@ -9,13 +9,16 @@ public class Portfolio : EventSourcedAggregate
 
     public Portfolio(IEnumerable<IEvent> events) : base(events) { }
     public Dictionary<InvestmentGroup, Percent> DesiredDistribution { get; private set; }
-    public List<Transaction> Transactions { get; private set; }
+    public List<Investment> RegisteredInvestments { get; set; } = new List<Investment>();
 
-    public static Portfolio CreateNew()
+
+    public List<Transaction> Transactions { get; private set; } = new List<Transaction>();
+
+    public static Portfolio CreateNew(string name)
     {
         var @event = new PortfolioCreated
         {
-            PortfolioId = Guid.NewGuid().ToString()
+            PortfolioId = name
         };
         var newPortfolio = new Portfolio();
         newPortfolio.Append(@event);
@@ -33,13 +36,27 @@ public class Portfolio : EventSourcedAggregate
         });
     }
 
+    public void RegisterInvestment(Investment investment)
+    {
+        if (RegisteredInvestments.Any(i => i.Id == investment.Id)) throw new InvalidDataException("The same investmentId cannot be registered multiple times");
+
+        Append(new InvestmentWasRegistered
+        {
+            InvestmentId = investment.Id.Value,
+            InvestmentGroup = investment.Group.DisplayName,
+            InvestmentType = investment.Type.DisplayName
+        });
+    }
+
     public void AddTransaction(Transaction transaction)
     {
+        if (!RegisteredInvestments.Any(i => i.Id == transaction.InvestmentId)) throw new InvalidOperationException("Transaction cannot be registered for an investement that is not registered first");
+
+
         Append(new NewTransactionWasCreated
         {
             Date = transaction.Date,
-            InvestmentName = transaction.Investment.Name,
-            InvestmentType = transaction.Investment.Type.DisplayName,
+            InvestmentId = transaction.InvestmentId.Value,
             Amount = transaction.Amount,
             Fee = transaction.Fee,
             Currency = transaction.Currency
@@ -49,7 +66,7 @@ public class Portfolio : EventSourcedAggregate
 
 
     //-------------------------------------------------
-    // Event handlers, building the state of the object
+    // Event handlers, building the state of the aggregate
     //-------------------------------------------------
     public void When(PortfolioCreated @event)
     {
@@ -62,11 +79,15 @@ public class Portfolio : EventSourcedAggregate
             x => Enumeration.FromDisplayName<InvestmentGroup>(x.Key), x => new Percent(x.Value));
     }
 
+    public void When(InvestmentWasRegistered @event)
+    {
+        RegisteredInvestments.Add(new Investment(@event.InvestmentId, @event.InvestmentType, @event.InvestmentGroup));
+    }
+
     public void When(NewTransactionWasCreated @event)
     {
-        if (Transactions is null) Transactions = new List<Transaction>();
         Transactions.Add(new Transaction(
-            new Investment(@event.InvestmentName, Enumeration.FromDisplayName<InvestmentType>(@event.InvestmentType)),
+            new InvestmentId(@event.InvestmentId),
             @event.Date,
             @event.Amount,
             @event.Price,

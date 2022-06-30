@@ -1,10 +1,10 @@
-using Domain;
 using Domain.ValueObjects;
-using FakeItEasy;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using PocketCqrs;
 using PocketCqrs.EventStore;
+using Web.Commands;
+using Web.Queries;
 
 namespace IntegrationTests;
 
@@ -29,15 +29,22 @@ public class PortfolioScenarios
     [Test]
     public void CreatNewPortfolio()
     {
-
         var result = (Result<string>)_messaging.Dispatch(new CreatePortfolioCommand());
         var id = result.Value;
+
+        _messaging.Dispatch(new Web.Pages.Investments.Create.Command
+        {
+            PortfolioId = id,
+            InvestmentId = "Gold",
+            InvestmentGroup = InvestmentGroup.Gold.DisplayName,
+            InvestmentType = InvestmentType.Commodity.DisplayName
+        });
 
         _messaging.Dispatch(new AddTransactionCommand
         {
             PortfolioId = id,
             Date = DateTime.Now,
-            InvestmentName = "Gold",
+            InvestmentId = "Gold",
             Amount = 10,
             Price = new decimal(10.5),
             Fee = 5,
