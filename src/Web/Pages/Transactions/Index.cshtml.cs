@@ -61,9 +61,9 @@ public class Index : PageModel
                         TransactionId = t.TransactionId.Value.ToString(),
                         Date = t.Date,
                         Amount = t.Amount,
-                        Price = t.Price,
-                        Fee = t.Fee,
-                        Currency = t.Currency
+                        Price = t.Price.Value,
+                        Fee = t.Fee.Value,
+                        Currency = t.Price.Currency.DisplayName
                     }).ToList()
             };
         }

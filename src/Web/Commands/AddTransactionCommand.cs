@@ -35,9 +35,8 @@ public class AddTransactionCommandHandler : ICommandHandler<AddTransactionComman
                 new InvestmentId(cmd.InvestmentId),
                 cmd.Date,
                 cmd.Amount,
-                cmd.Price,
-                cmd.Fee,
-                cmd.Currency
+                new Price(cmd.Price, cmd.Currency),
+                new Price(cmd.Fee, cmd.Currency)
             ));
 
         _eventStore.AppendToStream(portfolio.Id.ToString(), portfolio.PendingEvents, stream.Version);

@@ -33,7 +33,7 @@ public class Create : PageModel
     public IActionResult OnPost()
     {
         _messaging.Dispatch(Data);
-        return RedirectToPage("Investments/Index");
+        return RedirectToPage("/Investments/Index");
     }
 
     public class Command : ICommand

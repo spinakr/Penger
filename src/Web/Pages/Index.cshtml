@@ -1,11 +1,11 @@
-﻿@page
+﻿@page "{portfolioId=kofoed}"
 @model Web.Pages.Index
 @{
-    ViewData["Title"] = "Home page";
+    ViewData["Title"] = "Index";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-
-
+<div>
+    <h1>Portfolio - @Model.Data.portfolioId </h1>
+    <p>@Model.Data.totalValue
+    <p>
 </div>

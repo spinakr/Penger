@@ -50,4 +50,22 @@ public class PortfolioTests
             { InvestmentGroup.SingleStocks, new Percent(0.05) }
         }))).Should().Throw<InvalidDataException>();
     }
+
+
+    [Test]
+    public void TotalPortfolioValue_SimpleBuyAndSell_ShouldCalculateCorrectly()
+    {
+        var port = Portfolio.CreateNew("TEST");
+        port.RegisterInvestment(new Investment(new InvestmentId("DNB Global Indeks"), InvestmentType.Fund, InvestmentGroup.GlobalIndex));
+        port.RegisterInvestment(new Investment(new InvestmentId("KLP fremvoksende marked indeks 2"), InvestmentType.Fund, InvestmentGroup.GlobalIndex));
+        port.RegisterInvestment(new Investment(new InvestmentId("Gold"), InvestmentType.Commodity, InvestmentGroup.Gold));
+
+        port.AddTransaction(Transaction.CreateNew(new InvestmentId("DNB Global Indeks"), new DateTime(2022, 1, 1), 10, new Price(100, CurrencyType.NOK), Price.ZERO)); //1000 NOK
+        port.AddTransaction(Transaction.CreateNew(new InvestmentId("KLP fremvoksende marked indeks 2"), new DateTime(2022, 1, 1), 9, new Price(200, CurrencyType.NOK), Price.ZERO)); // 1800 NOK
+        port.AddTransaction(Transaction.CreateNew(new InvestmentId("Gold"), new DateTime(2022, 1, 1), 2, new Price(1000, CurrencyType.NOK), Price.ZERO)); // 2000 NOK
+        port.AddTransaction(Transaction.CreateNew(new InvestmentId("DNB Global Indeks"), new DateTime(2022, 1, 1), 10, new Price(200, CurrencyType.NOK), Price.ZERO, TransactionType.Sale)); // -1000 NOK // SUM : 2900 NOK
+
+        port.TotalPortfolioValue.Should().Be(3800);
+
+    }
 }

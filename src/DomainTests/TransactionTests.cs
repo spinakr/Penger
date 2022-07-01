@@ -18,9 +18,8 @@ public class TransactionTests
             Transaction.CreateNew(new InvestmentId("Gold"),
             DateTime.Now,
             amount: 100,
-            price: new decimal(50.5),
-            fee: 5,
-            currency: "NOK"
+            price: new Price(50.5m, CurrencyType.NOK),
+            fee: new Price(5, CurrencyType.NOK)
         ));
 
         port.Transactions.Count.Should().Be(1);
