@@ -74,12 +74,14 @@ public class Create : PageModel
 
     public class CommandHandler : ICommandHandler<Command>
     {
-        public CommandHandler(IEventStore eventStore)
+        public CommandHandler(IEventStore eventStore, IMessaging messaging)
         {
             _eventStore = eventStore;
+            _messaging = messaging;
         }
 
         private IEventStore _eventStore { get; }
+        private IMessaging _messaging { get; }
 
         public Result Handle(Command cmd)
         {
@@ -95,6 +97,11 @@ public class Create : PageModel
             ));
 
             _eventStore.AppendToStream(portfolio.Id.ToString(), portfolio.PendingEvents, stream.Version);
+
+            foreach (var e in portfolio.PendingEvents)
+            {
+                _messaging.Publish(e);
+            }
             return Result.Complete();
         }
     }

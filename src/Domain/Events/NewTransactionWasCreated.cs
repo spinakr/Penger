@@ -4,6 +4,7 @@ namespace Domain.Events
 {
     public class NewTransactionWasCreated : IEvent
     {
+        public string PortfolioId { get; set; }
         public DateTime Date { get; set; }
         public string InvestmentId { get; set; }
         public Guid TransactionId { get; set; }

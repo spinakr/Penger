@@ -11,8 +11,6 @@ public class Portfolio : EventSourcedAggregate
     public Dictionary<InvestmentGroup, Percent> DesiredDistribution { get; private set; }
     public List<Investment> RegisteredInvestments { get; set; } = new List<Investment>();
     public List<Transaction> Transactions { get; private set; } = new List<Transaction>();
-    public Dictionary<InvestmentId, Price> CurrentInvestmentPrices { get; set; } = new Dictionary<InvestmentId, Price>();
-    public decimal TotalPortfolioValue => Transactions.GroupBy(x => x.InvestmentId).Sum(g => (decimal)g.Sum(x => x.Amount * (x.Type == TransactionType.Sale ? -1 : 1)) * CurrentInvestmentPrices[g.Key].Value);
 
 
 
@@ -34,6 +32,7 @@ public class Portfolio : EventSourcedAggregate
 
         Append(new PortfolioDistributionWasChanged
         {
+            PortfolioId = Id,
             Distribution = distribution.ToDictionary(x => x.Key.DisplayName, x => x.Value.Fraction)
         });
     }
@@ -44,6 +43,7 @@ public class Portfolio : EventSourcedAggregate
 
         Append(new InvestmentWasRegistered
         {
+            PortfolioId = Id,
             InvestmentId = investment.Id.Value,
             InvestmentGroup = investment.Group.DisplayName,
             InvestmentType = investment.Type.DisplayName
@@ -56,6 +56,7 @@ public class Portfolio : EventSourcedAggregate
 
         Append(new NewTransactionWasCreated
         {
+            PortfolioId = Id,
             Date = transaction.Date,
             InvestmentId = transaction.InvestmentId.Value,
             TransactionId = transaction.TransactionId.Value,
@@ -99,9 +100,5 @@ public class Portfolio : EventSourcedAggregate
             Enumeration.FromDisplayName<TransactionType>(@event.TransactionType)
         ));
 
-        var investmentId = new InvestmentId(@event.InvestmentId);
-        var newPrice = new Price(@event.Price, Enumeration.FromDisplayName<CurrencyType>(@event.Currency));
-        if (!CurrentInvestmentPrices.ContainsKey(investmentId)) CurrentInvestmentPrices.Add(investmentId, newPrice);
-        else CurrentInvestmentPrices[investmentId] = newPrice;
     }
 }

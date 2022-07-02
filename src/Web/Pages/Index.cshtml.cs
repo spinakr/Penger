@@ -1,8 +1,8 @@
-﻿using System.Globalization;
-using Domain;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+﻿using Microsoft.AspNetCore.Mvc.RazorPages;
 using PocketCqrs;
 using PocketCqrs.EventStore;
+using PocketCqrs.Projections;
+using Web.Projections;
 
 namespace Web.Pages;
 
@@ -27,19 +27,18 @@ public class Index : PageModel
 
     public class QueryHandler : IQueryHandler<Query, Model>
     {
-        public QueryHandler(IEventStore eventStore)
+        private IEventStore _eventStore { get; }
+        private IProjectionStore<string, PortfolioStatusProjection.PortfolioStatus> _projectionStore { get; }
+        public QueryHandler(IEventStore eventStore, IProjectionStore<string, PortfolioStatusProjection.PortfolioStatus> projectionStore)
         {
             _eventStore = eventStore;
+            _projectionStore = projectionStore;
         }
-
-        private IEventStore _eventStore { get; }
 
         public Model Handle(Query query)
         {
-            var stream = _eventStore.LoadEventStream(query.PortfolioId);
-            var portfolio = new Portfolio(stream.Events);
-
-            return new Model(query.PortfolioId, Math.Floor(portfolio.TotalPortfolioValue).ToString("C", new CultureInfo("no-NO")));
+            var portfolioProjection = _projectionStore.GetProjection(query.PortfolioId);
+            return new Model(query.PortfolioId, portfolioProjection.TotalValue);
         }
     }
 }

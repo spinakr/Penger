@@ -11,6 +11,11 @@ public class InvestmentId : ValueObject
         Value = value;
     }
 
+    public static explicit operator InvestmentId(string value)
+    {
+        return new InvestmentId(value);
+    }
+
     protected override IEnumerable<object> GetEqualityComponents()
     {
         yield return Value;

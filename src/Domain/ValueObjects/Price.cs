@@ -1,3 +1,5 @@
+using Newtonsoft.Json;
+
 namespace Domain.ValueObjects;
 
 public class Price
@@ -10,6 +12,7 @@ public class Price
     {
     }
 
+    [JsonConstructor]
     public Price(decimal value, CurrencyType currency)
     {
         if (value < 0) throw new ArgumentException("Price cannot be negative");
