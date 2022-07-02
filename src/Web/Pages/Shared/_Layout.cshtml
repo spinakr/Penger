@@ -2,39 +2,41 @@
 <html lang="en">
 
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>@ViewData["Title"] - Penger</title>
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
+    <link rel="stylesheet" href="~/css/unpoly.min.css"/>
+    <script src="~/js/unpoly.min.js"></script>
 </head>
 
 <body>
-    <div>
-        <nav>
-            <span>
-                <a asp-page="/Index">Home</a>
-            </span>
-            <span>
-                <a asp-page="/Investments/Index">Investments</a>
-            </span>
-            <span>
-                <a asp-page="/Transactions/Index">Transactions</a>
-            </span>
+<div>
+    <nav>
+        <span>
+            <a asp-page="/Index">Home</a>
+        </span>
+        <span>
+            <a asp-page="/Investments/Index">Investments</a>
+        </span>
+        <span>
+            <a asp-page="/Transactions/Index">Transactions</a>
+        </span>
 
-        </nav>
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
+    </nav>
+    <main role="main" class="pb-3">
+        @RenderBody()
+    </main>
+</div>
 
-    <footer class="">
-        <hr />
-        &copy; 2022 - Penger
-    </footer>
+<footer class="">
+    <hr/>
+    &copy; 2022 - Penger
+</footer>
 
-    <script src="~/js/site.js" asp-append-version="true"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>
 
-    @await RenderSectionAsync("Scripts", required: false)
+@await RenderSectionAsync("Scripts", required: false)
 </body>
 
 </html>

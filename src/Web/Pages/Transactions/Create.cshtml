@@ -7,7 +7,7 @@
 <div>
     <h1>Create Transaction </h1>
 
-    <form method="post">
+    <form method="post" up-target=".transaction-list:after" up-layer="root">
         <h3>Portfolio: @Model.Data.command.PortfolioId</h3>
         @Html.HiddenFor(x => x.Data.command.PortfolioId)
         <div>

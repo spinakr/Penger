@@ -6,18 +6,6 @@
 
 <div>
     <h1>Transactions </h1>
-    <ul>
-        @foreach (var transaction in Model.Data.Transactions)
-        {
-            <li>
-                <a asp-page="/Transactions/" asp-route-id="@transaction.TransactionId">
-                    @transaction.TransactionId.Substring(0,5)
-                </a>
-                <span>@transaction.InvestmentId</span>
-                <span>@transaction.Price</span>
-                <span>@transaction.Amount</span>
-            </li>
-        }
-    </ul>
-    <a asp-page="/Transactions/Create">Create New</a>
+    @await Component.InvokeAsync("Transactions", Model.Data.Transactions)
+    <a asp-page="/Transactions/Create" up-layer="new">Create New</a>
 </div>

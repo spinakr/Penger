@@ -4,7 +4,6 @@ using Microsoft.Extensions.DependencyInjection;
 using PocketCqrs;
 using PocketCqrs.EventStore;
 using Web.Commands;
-using Web.Queries;
 
 namespace IntegrationTests;
 
@@ -51,12 +50,11 @@ public class PortfolioScenarios
             Currency = "NOK"
         });
 
-        var reloadedPort = _messaging.Dispatch(new GetPortfolioAggregateQuery
+        var reloadedPort = _messaging.Dispatch(new Web.Pages.Transactions.Index.Query
         {
             PortfolioId = id
         });
 
         reloadedPort.Transactions.Count.Should().Be(1);
-        reloadedPort.Id.Should().Be(id);
     }
 }

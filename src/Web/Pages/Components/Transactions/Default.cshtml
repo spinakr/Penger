@@ -1,0 +1,15 @@
+@model List<Web.Pages.Transactions.Index.Model.Transaction>
+
+<ul class="transaction-list">
+    @foreach (var transaction in @Model)
+    {
+        <li>
+            <a asp-page="/Transactions/" asp-route-id="@transaction.TransactionId">
+                @transaction.TransactionId.Substring(0, 5)
+            </a>
+            <span>@transaction.InvestmentId</span>
+            <span>@transaction.Price</span>
+            <span>@transaction.Amount</span>
+        </li>
+    }
+</ul>

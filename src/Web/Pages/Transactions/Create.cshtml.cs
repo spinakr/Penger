@@ -22,8 +22,12 @@ public class Create : PageModel
 
     public IActionResult OnPost()
     {
-        _messaging.Dispatch(Data.command);
-        return RedirectToPage("/Transactions/Index");
+        var model = new List<Index.Model.Transaction>
+        {
+            ((Result<Index.Model.Transaction>)_messaging.Dispatch(Data.command)).Value
+        };
+        return ViewComponent("Transactions", model);
+        // return RedirectToPage("/Transactions/Index");
     }
 
     public class Model
@@ -88,21 +92,32 @@ public class Create : PageModel
             var stream = _eventStore.LoadEventStream(cmd.PortfolioId);
             var portfolio = new Portfolio(stream.Events);
 
-            portfolio.AddTransaction(Transaction.CreateNew(
+            var newTransaction = Transaction.CreateNew(
                 new InvestmentId(cmd.InvestmentId),
                 cmd.Date,
                 cmd.Amount ?? 0,
                 new Price(cmd.Price ?? 0, Enumeration.FromDisplayName<CurrencyType>(cmd.Currency)),
                 new Price(cmd.Fee, Enumeration.FromDisplayName<CurrencyType>(cmd.Currency))
-            ));
+            );
+            portfolio.AddTransaction(newTransaction);
 
-            _eventStore.AppendToStream(portfolio.Id.ToString(), portfolio.PendingEvents, stream.Version);
+            _eventStore.AppendToStream(portfolio.Id, portfolio.PendingEvents, stream.Version);
 
             foreach (var e in portfolio.PendingEvents)
             {
                 _messaging.Publish(e);
             }
-            return Result.Complete();
+
+            return Result.Complete(new Index.Model.Transaction
+            {
+                TransactionId = newTransaction.TransactionId.Value.ToString(),
+                InvestmentId = newTransaction.InvestmentId.Value.ToString(),
+                Date = newTransaction.Date,
+                Amount = newTransaction.Amount,
+                Price = newTransaction.Price.Value,
+                Fee = newTransaction.Fee.Value,
+                Currency = newTransaction.Price.Currency.DisplayName
+            });
         }
     }
 }
