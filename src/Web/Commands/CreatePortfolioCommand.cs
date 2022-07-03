@@ -1,14 +1,15 @@
 using Domain;
-using PocketCqrs;
+using MediatR;
 using PocketCqrs.EventStore;
 
 namespace Web.Commands;
 
-public class CreatePortfolioCommand : ICommand
+public class CreatePortfolioCommand : IRequest<string>
 {
+    public string Name { get; set; }
 }
 
-public class CreatePortfolioCommandHandler : ICommandHandler<CreatePortfolioCommand>
+public class CreatePortfolioCommandHandler : IRequestHandler<CreatePortfolioCommand, string>
 {
     public CreatePortfolioCommandHandler(IEventStore eventStore)
     {
@@ -17,10 +18,10 @@ public class CreatePortfolioCommandHandler : ICommandHandler<CreatePortfolioComm
 
     private IEventStore _eventStore { get; }
 
-    public Result Handle(CreatePortfolioCommand cmd)
+    public Task<string> Handle(CreatePortfolioCommand cmd, CancellationToken token)
     {
-        var newPortfolio = Portfolio.CreateNew("TEST");
+        var newPortfolio = Portfolio.CreateNew(cmd.Name);
         _eventStore.AppendToStream(newPortfolio.Id.ToString(), newPortfolio.PendingEvents, 0);
-        return Result.Complete<string>(newPortfolio.Id);
+        return Task.FromResult(newPortfolio.Id);
     }
 }

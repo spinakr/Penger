@@ -2,12 +2,12 @@ using System.Globalization;
 using Domain;
 using Domain.Events;
 using Domain.ValueObjects;
-using PocketCqrs;
+using MediatR;
 using PocketCqrs.Projections;
 
 namespace Web.Projections;
 
-public class PortfolioStatusProjection : IEventHandler<NewTransactionWasCreated>
+public class PortfolioStatusProjection : INotificationHandler<NewTransactionWasCreated>
 {
     public class PortfolioStatus
     {
@@ -25,7 +25,7 @@ public class PortfolioStatusProjection : IEventHandler<NewTransactionWasCreated>
         _projectionStore = projectionStore;
     }
 
-    public void Handle(NewTransactionWasCreated @event)
+    public Task Handle(NewTransactionWasCreated @event, CancellationToken token)
     {
         var projection = _projectionStore.GetProjection(@event.PortfolioId);
 
@@ -53,8 +53,8 @@ public class PortfolioStatusProjection : IEventHandler<NewTransactionWasCreated>
             .Sum(g => (decimal)g.Value * projection.CurrentInvestmentPrices[g.Key].Value)
             .ToString("C", new CultureInfo("no-NO"));
 
-        System.Console.WriteLine("Projection updated: " + projection.TotalValue);
-
         _projectionStore.Save(@event.PortfolioId, projection);
+
+        return Task.CompletedTask;
     }
 }

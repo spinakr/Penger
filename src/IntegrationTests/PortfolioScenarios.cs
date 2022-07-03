@@ -1,37 +1,42 @@
 using Domain.ValueObjects;
 using FluentAssertions;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using PocketCqrs;
 using PocketCqrs.EventStore;
+using PocketCqrs.Projections;
 using Web.Commands;
+using Web.Projections;
 
 namespace IntegrationTests;
 
 public class PortfolioScenarios
 {
-    private IMessaging _messaging;
+    private IMediator _messaging;
 
     [SetUp]
     public void Setup()
     {
         var provider = new ServiceCollection()
-            .AddHandlers(typeof(CreatePortfolioCommandHandler).Assembly)
+            .AddHandlers(typeof(Web.StartupWorker).Assembly)
+            .AddMediatR(typeof(Web.StartupWorker).Assembly)
             .AddSingleton<IMessaging, Messaging>()
             .AddSingleton<IEventStore, EventStore>()
             .AddSingleton<IAppendOnlyStore, InMemoryAppendOnlyStore>()
+            .AddSingleton<IProjectionStore<string, PortfolioStatusProjection.PortfolioStatus>,
+                              FileProjectionStore<string, PortfolioStatusProjection.PortfolioStatus>>()
             .BuildServiceProvider();
 
 
-        _messaging = provider.GetService<IMessaging>();
+        _messaging = provider.GetRequiredService<IMediator>();
     }
 
     [Test]
-    public void CreatNewPortfolio()
+    public async Task CreatNewPortfolio()
     {
-        var result = (Result<string>)_messaging.Dispatch(new CreatePortfolioCommand());
-        var id = result.Value;
+        var id = await _messaging.Send(new CreatePortfolioCommand { Name = "Test" });
 
-        _messaging.Dispatch(new Web.Pages.Investments.Create.Command
+        await _messaging.Send(new Web.Pages.Investments.Create.Command
         {
             PortfolioId = id,
             InvestmentId = "Gold",
@@ -39,7 +44,7 @@ public class PortfolioScenarios
             InvestmentType = InvestmentType.Commodity.DisplayName
         });
 
-        _messaging.Dispatch(new AddTransactionCommand
+        await _messaging.Send(new Web.Pages.Transactions.Create.Command
         {
             PortfolioId = id,
             Date = DateTime.Now,
@@ -50,7 +55,7 @@ public class PortfolioScenarios
             Currency = "NOK"
         });
 
-        var reloadedPort = _messaging.Dispatch(new Web.Pages.Transactions.Index.Query
+        var reloadedPort = await _messaging.Send(new Web.Pages.Transactions.Index.Query
         {
             PortfolioId = id
         });

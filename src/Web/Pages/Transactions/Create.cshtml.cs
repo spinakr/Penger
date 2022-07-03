@@ -1,33 +1,31 @@
-using System.ComponentModel.DataAnnotations;
 using Domain;
 using Domain.ValueObjects;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using PocketCqrs;
 using PocketCqrs.EventStore;
 
 namespace Web.Pages.Transactions;
 
 public class Create : PageModel
 {
-    private readonly IMessaging _messaging;
+    private readonly IMediator _messaging;
     [BindProperty]
     public Model Data { get; set; }
 
-    public Create(IMessaging messaging) => _messaging = messaging;
+    public Create(IMediator messaging) => _messaging = messaging;
 
 
-    public void OnGet(Query q) => Data = _messaging.Dispatch(q);
+    public async Task OnGetAsync(Query q) => Data = await _messaging.Send(q);
 
-    public IActionResult OnPost()
+    public async Task<IActionResult> OnPostAsync()
     {
         var model = new List<Index.Model.Transaction>
         {
-            ((Result<Index.Model.Transaction>)_messaging.Dispatch(Data.command)).Value
+            await _messaging.Send(Data.command)
         };
         return ViewComponent("Transactions", model);
-        // return RedirectToPage("/Transactions/Index");
     }
 
     public class Model
@@ -36,9 +34,9 @@ public class Create : PageModel
         public List<SelectListItem> InvestmentOptions { get; set; }
     }
 
-    public record Query(string portfolioId) : IQuery<Model>;
+    public record Query(string portfolioId) : IRequest<Model>;
 
-    public class Command : ICommand
+    public class Command : IRequest<Index.Model.Transaction>
     {
         public string PortfolioId { get; set; }
         public string InvestmentId { get; set; }
@@ -49,7 +47,7 @@ public class Create : PageModel
         public string Currency { get; set; }
     }
 
-    public class InvestmentQueryHandler : IQueryHandler<Query, Model>
+    public class InvestmentQueryHandler : IRequestHandler<Query, Model>
     {
         public InvestmentQueryHandler(IEventStore eventStore)
         {
@@ -58,11 +56,11 @@ public class Create : PageModel
 
         private IEventStore _eventStore { get; }
 
-        public Model Handle(Query query)
+        public Task<Model> Handle(Query query, CancellationToken token)
         {
             var stream = _eventStore.LoadEventStream(query.portfolioId);
             var portfolio = new Portfolio(stream.Events);
-            return new Model
+            return Task.FromResult(new Model
             {
                 command = new Command
                 {
@@ -71,23 +69,23 @@ public class Create : PageModel
                     Fee = 0,
                 },
                 InvestmentOptions = portfolio.RegisteredInvestments.Select(i => new SelectListItem(i.Id.ToString(), i.Id.ToString())).ToList()
-            };
+            });
         }
     }
 
 
-    public class CommandHandler : ICommandHandler<Command>
+    public class CommandHandler : IRequestHandler<Command, Index.Model.Transaction>
     {
-        public CommandHandler(IEventStore eventStore, IMessaging messaging)
+        public CommandHandler(IEventStore eventStore, IMediator messaging)
         {
             _eventStore = eventStore;
             _messaging = messaging;
         }
 
         private IEventStore _eventStore { get; }
-        private IMessaging _messaging { get; }
+        private IMediator _messaging { get; }
 
-        public Result Handle(Command cmd)
+        public Task<Index.Model.Transaction> Handle(Command cmd, CancellationToken token)
         {
             var stream = _eventStore.LoadEventStream(cmd.PortfolioId);
             var portfolio = new Portfolio(stream.Events);
@@ -108,7 +106,7 @@ public class Create : PageModel
                 _messaging.Publish(e);
             }
 
-            return Result.Complete(new Index.Model.Transaction
+            return Task.FromResult(new Index.Model.Transaction
             {
                 TransactionId = newTransaction.TransactionId.Value.ToString(),
                 InvestmentId = newTransaction.InvestmentId.Value.ToString(),

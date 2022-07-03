@@ -1,24 +1,23 @@
-using System.ComponentModel.DataAnnotations;
 using Domain;
 using Domain.ValueObjects;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using PocketCqrs;
 using PocketCqrs.EventStore;
 
 namespace Web.Pages.Investments;
 
 public class Create : PageModel
 {
-    private readonly IMessaging _messaging;
+    private readonly IMediator _messaging;
     [BindProperty]
     public Command Data { get; set; }
 
     public List<SelectListItem> InvestmentTypeOptions = Enumeration.GetAll<InvestmentType>().Select(t => new SelectListItem(t.DisplayName, t.DisplayName)).ToList();
     public List<SelectListItem> InvestmentGroupOptions = Enumeration.GetAll<InvestmentGroup>().Select(t => new SelectListItem(t.DisplayName, t.DisplayName)).ToList();
 
-    public Create(IMessaging messaging) => _messaging = messaging;
+    public Create(IMediator messaging) => _messaging = messaging;
 
     public record Query(string portfolioId);
 
@@ -32,11 +31,11 @@ public class Create : PageModel
 
     public IActionResult OnPost()
     {
-        _messaging.Dispatch(Data);
+        _messaging.Send(Data);
         return RedirectToPage("/Investments/Index");
     }
 
-    public class Command : ICommand
+    public class Command : IRequest
     {
         public string PortfolioId { get; set; }
         public string InvestmentId { get; set; }
@@ -44,7 +43,7 @@ public class Create : PageModel
         public string InvestmentType { get; set; }
     }
 
-    public class CommandHandler : ICommandHandler<Command>
+    public class CommandHandler : IRequestHandler<Command>
     {
         public CommandHandler(IEventStore eventStore)
         {
@@ -53,7 +52,7 @@ public class Create : PageModel
 
         private IEventStore _eventStore { get; }
 
-        public Result Handle(Command cmd)
+        public Task<Unit> Handle(Command cmd, CancellationToken token)
         {
             var stream = _eventStore.LoadEventStream(cmd.PortfolioId);
             var portfolio = new Portfolio(stream.Events);
@@ -61,7 +60,8 @@ public class Create : PageModel
             portfolio.RegisterInvestment(new Investment(cmd.InvestmentId, cmd.InvestmentType, cmd.InvestmentGroup));
 
             _eventStore.AppendToStream(portfolio.Id.ToString(), portfolio.PendingEvents, stream.Version);
-            return Result.Complete();
+
+            return Unit.Task;
         }
     }
 }

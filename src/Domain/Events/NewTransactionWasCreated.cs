@@ -1,8 +1,9 @@
+using MediatR;
 using PocketCqrs;
 
 namespace Domain.Events
 {
-    public class NewTransactionWasCreated : IEvent
+    public class NewTransactionWasCreated : IEvent, INotification
     {
         public string PortfolioId { get; set; }
         public DateTime Date { get; set; }

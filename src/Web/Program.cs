@@ -1,3 +1,4 @@
+using MediatR;
 using PocketCqrs;
 using PocketCqrs.EventStore;
 using PocketCqrs.Projections;
@@ -16,6 +17,8 @@ builder.Services.AddSingleton<IAppendOnlyStore>(new FileAppendOnlyStore("penger"
 builder.Services.AddHostedService<StartupWorker>();
 builder.Services.AddSingleton<IProjectionStore<string, PortfolioStatusProjection.PortfolioStatus>,
                               FileProjectionStore<string, PortfolioStatusProjection.PortfolioStatus>>();
+
+builder.Services.AddMediatR(typeof(Program));
 
 
 var app = builder.Build();

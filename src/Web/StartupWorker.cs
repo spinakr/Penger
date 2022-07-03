@@ -22,7 +22,6 @@ public class StartupWorker : IHostedService, IDisposable
     private void DoWork(object state)
     {
         var stream = _eventStore.LoadEventStream("kofoed");
-        System.Console.WriteLine($"{stream.Events.Count} events loaded");
         if (!stream.Events.Any())
         {
             var port = Portfolio.CreateNew("kofoed");
