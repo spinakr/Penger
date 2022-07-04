@@ -13,5 +13,7 @@ namespace Domain.ValueObjects
         public static readonly CurrencyType CHF = new CurrencyType(5, "CHF");
         public static readonly CurrencyType NOK = new CurrencyType(6, "NOK");
         public static readonly CurrencyType SEK = new CurrencyType(7, "SEK");
+        public static readonly CurrencyType ETH = new CurrencyType(8, "ETH");
+        public static readonly CurrencyType BTC = new CurrencyType(9, "BTC");
     }
 }

@@ -1,0 +1,7 @@
+@page
+@model Transactions.Upload
+
+<form enctype="multipart/form-data" method="post">
+    <input asp-for="FormFile" type="file" />
+    <input asp-page-handler="Upload" type="submit" value="Upload" />
+</form>
