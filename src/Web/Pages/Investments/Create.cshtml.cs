@@ -21,7 +21,7 @@ public class Create : PageModel
 
     public record Query(string portfolioId);
 
-    public void OnGet(Query q)
+    public async Task OnGetAsync(Query q)
     {
         Data = new Command
         {
@@ -29,13 +29,16 @@ public class Create : PageModel
         };
     }
 
-    public IActionResult OnPost()
+    public async Task<IActionResult> OnPostAsync()
     {
-        _messaging.Send(Data);
-        return RedirectToPage("/Investments/Index");
+        var model = new List<Index.Model.Investment>
+        {
+            await _messaging.Send(Data)
+        };
+        return ViewComponent("Investments", model);
     }
 
-    public class Command : IRequest
+    public class Command : IRequest<Index.Model.Investment>
     {
         public string PortfolioId { get; set; }
         public string InvestmentId { get; set; }
@@ -43,7 +46,7 @@ public class Create : PageModel
         public string InvestmentType { get; set; }
     }
 
-    public class CommandHandler : IRequestHandler<Command>
+    public class CommandHandler : IRequestHandler<Command, Index.Model.Investment>
     {
         public CommandHandler(IEventStore eventStore)
         {
@@ -52,16 +55,22 @@ public class Create : PageModel
 
         private IEventStore _eventStore { get; }
 
-        public Task<Unit> Handle(Command cmd, CancellationToken token)
+        public Task<Index.Model.Investment> Handle(Command cmd, CancellationToken token)
         {
             var stream = _eventStore.LoadEventStream(cmd.PortfolioId);
             var portfolio = new Portfolio(stream.Events);
 
-            portfolio.RegisterInvestment(new Investment(cmd.InvestmentId, cmd.InvestmentType, cmd.InvestmentGroup));
+            var newInvestment = new Investment(cmd.InvestmentId, cmd.InvestmentType, cmd.InvestmentGroup);
+            portfolio.RegisterInvestment(newInvestment);
 
             _eventStore.AppendToStream(portfolio.Id.ToString(), portfolio.PendingEvents, stream.Version);
 
-            return Unit.Task;
+            return Task.FromResult(new Index.Model.Investment
+            {
+                InvestmentId = cmd.InvestmentId,
+                InvestmentType = cmd.InvestmentType,
+                InvestmentGroup = cmd.InvestmentGroup
+            });
         }
     }
 }

@@ -23,8 +23,7 @@ public class PortfolioScenarios
             .AddSingleton<IMessaging, Messaging>()
             .AddSingleton<IEventStore, EventStore>()
             .AddSingleton<IAppendOnlyStore, InMemoryAppendOnlyStore>()
-            .AddSingleton<IProjectionStore<string, PortfolioStatusProjection.PortfolioStatus>,
-                              FileProjectionStore<string, PortfolioStatusProjection.PortfolioStatus>>()
+            .AddSingleton<IProjectionStore<string, PortfolioStatus>, FileProjectionStore<string, PortfolioStatus>>()
             .BuildServiceProvider();
 
 

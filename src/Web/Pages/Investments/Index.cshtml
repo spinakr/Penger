@@ -6,15 +6,6 @@
 
 <div>
     <h1>Investments </h1>
-    <ul>
-        @foreach (var investment in Model.Data.Investments)
-        {
-            <li>
-                <a asp-page="/Investments/">
-                    @Html.DisplayFor(modelItem => investment.InvestmendId)
-                </a>
-            </li>
-        }
-    </ul>
+    @await Component.InvokeAsync("Investments", Model.Data.Investments)
     <a asp-page="/Investments/Create" up-layer="new">Create New</a>
 </div>

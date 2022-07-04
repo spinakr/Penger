@@ -1,8 +1,7 @@
-using System.ComponentModel.DataAnnotations;
-using Domain;
 using MediatR;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using PocketCqrs.EventStore;
+using PocketCqrs.Projections;
+using Web.Projections;
 
 namespace Web.Pages.Investments;
 
@@ -13,9 +12,16 @@ public class Index : PageModel
 
     public Index(IMediator messaging) => _messaging = messaging;
 
-    public async Task OnGetAsync(Query query)
+    public record Model
     {
-        Data = await _messaging.Send(query);
+        public List<Investment> Investments { get; set; }
+
+        public record Investment
+        {
+            public string InvestmentId { get; set; }
+            public string InvestmentType { get; set; }
+            public string InvestmentGroup { get; set; }
+        }
     }
 
     public class Query : IRequest<Model>
@@ -23,46 +29,33 @@ public class Index : PageModel
         public string PortfolioId { get; set; }
     }
 
-    public record Model
+    public async Task OnGetAsync(Query query)
     {
-        public List<Investment> Investments { get; set; }
-
-        public record Investment
-        {
-            [Display(Name = "Investment Id")]
-            public string InvestmendId { get; set; }
-            [Display(Name = "Investment Type")]
-            public string InvestmentType { get; set; }
-            [Display(Name = "Investment Group")]
-            public string InvestmentGroup { get; set; }
-        }
+        Data = await _messaging.Send(query);
     }
 
     public class QueryHandler : IRequestHandler<Query, Model>
     {
-        public QueryHandler(IEventStore eventStore)
+        private IProjectionStore<string, List<RegisteredInvestment>> _projectionStore;
+        public QueryHandler(IProjectionStore<string, List<RegisteredInvestment>> projectionStore)
         {
-            _eventStore = eventStore;
+            _projectionStore = projectionStore;
         }
 
-        private IEventStore _eventStore { get; }
-
-        public async Task<Model> Handle(Query query, CancellationToken token)
+        public Task<Model> Handle(Query query, CancellationToken token)
         {
-            System.Console.WriteLine("Loading events for " + query.PortfolioId);
-            var stream = _eventStore.LoadEventStream(query.PortfolioId);
-            var portfolio = new Portfolio(stream.Events);
+            var projection = _projectionStore.GetProjection(query.PortfolioId);
 
-            return new Model
+            return Task.FromResult(new Model
             {
-                Investments = portfolio.RegisteredInvestments.Select(i =>
+                Investments = projection.Select(i =>
                     new Model.Investment
                     {
-                        InvestmendId = i.Id.Value,
-                        InvestmentGroup = i.Group.DisplayName,
-                        InvestmentType = i.Type.DisplayName
+                        InvestmentId = i.InvestmentId,
+                        InvestmentGroup = i.InvestmentGroup,
+                        InvestmentType = i.InvestmentType
                     }).ToList()
-            };
+            });
         }
     }
 }

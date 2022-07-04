@@ -7,16 +7,16 @@ using PocketCqrs.Projections;
 
 namespace Web.Projections;
 
+public class PortfolioStatus
+{
+    public string PortfolioId { get; set; }
+    public string TotalValue { get; set; }
+    public Dictionary<string, Price> CurrentInvestmentPrices { get; } = new();
+    public Dictionary<string, double> InvestmentCounts { get; } = new();
+}
+
 public class PortfolioStatusProjection : INotificationHandler<NewTransactionWasCreated>
 {
-    public class PortfolioStatus
-    {
-        public string TotalValue { get; set; }
-        public Dictionary<string, Price> CurrentInvestmentPrices { get; } = new();
-        public Dictionary<string, double> InvestmentCounts { get; } = new();
-
-
-    }
 
     private IProjectionStore<string, PortfolioStatus> _projectionStore;
 
@@ -30,6 +30,7 @@ public class PortfolioStatusProjection : INotificationHandler<NewTransactionWasC
         var projection = _projectionStore.GetProjection(@event.PortfolioId);
 
         var investmentId = @event.InvestmentId;
+        projection.PortfolioId = @event.PortfolioId;
         var newPrice = new Price(@event.Price, Enumeration.FromDisplayName<CurrencyType>(@event.Currency));
         if (!projection.CurrentInvestmentPrices.ContainsKey(investmentId))
         {

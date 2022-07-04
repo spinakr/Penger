@@ -1,0 +1,12 @@
+@model List<Web.Pages.Investments.Index.Model.Investment>
+
+<ul class="investment-list">
+    @foreach (var investment in @Model)
+    {
+        <li>
+            <a asp-page="/Investments/">
+                @Html.DisplayFor(modelItem => investment.InvestmentId)
+            </a>
+        </li>
+    }
+</ul>

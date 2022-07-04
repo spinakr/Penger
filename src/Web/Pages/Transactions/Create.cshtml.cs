@@ -101,11 +101,6 @@ public class Create : PageModel
 
             _eventStore.AppendToStream(portfolio.Id, portfolio.PendingEvents, stream.Version);
 
-            foreach (var e in portfolio.PendingEvents)
-            {
-                _messaging.Publish(e);
-            }
-
             return Task.FromResult(new Index.Model.Transaction
             {
                 TransactionId = newTransaction.TransactionId.Value.ToString(),

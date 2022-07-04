@@ -1,8 +1,9 @@
+using MediatR;
 using PocketCqrs;
 
 namespace Domain.Events
 {
-    public class InvestmentWasRegistered : IEvent
+    public class InvestmentWasRegistered : IEvent, INotification
     {
         public string PortfolioId { get; set; }
 

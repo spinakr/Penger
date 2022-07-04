@@ -10,7 +10,7 @@
     <PackageReference Include="HtmlTags" Version="8.1.1" />
     <PackageReference Include="MediatR" Version="10.0.1" />
     <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="10.0.1" />
-    <PackageReference Include="PocketCqrs" Version="1.3.2" />
+    <PackageReference Include="PocketCqrs" Version="1.4.0" />
   </ItemGroup>
 
   <ItemGroup>

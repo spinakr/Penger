@@ -15,8 +15,8 @@ builder.Services.AddSingleton<IMessaging, Messaging>();
 builder.Services.AddSingleton<IEventStore, EventStore>();
 builder.Services.AddSingleton<IAppendOnlyStore>(new FileAppendOnlyStore("penger"));
 builder.Services.AddHostedService<StartupWorker>();
-builder.Services.AddSingleton<IProjectionStore<string, PortfolioStatusProjection.PortfolioStatus>>(
-    new FileProjectionStore<string, PortfolioStatusProjection.PortfolioStatus>("penger"));
+builder.Services.AddSingleton<IProjectionStore<string, PortfolioStatus>>(new FileProjectionStore<string, PortfolioStatus>("penger"));
+builder.Services.AddSingleton<IProjectionStore<string, List<RegisteredInvestment>>>(new FileProjectionStore<string, List<RegisteredInvestment>>("penger"));
 
 builder.Services.AddMediatR(typeof(Program));
 

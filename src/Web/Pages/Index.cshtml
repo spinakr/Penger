@@ -5,7 +5,12 @@
 }
 
 <div>
-    <h1>Portfolio - @Model.Data.portfolioId </h1>
-    <p>@Model.Data.totalValue
-    <p>
+    <h1>Portfolio - @Model.Data.PortfolioId</h1>
+    <b>@Model.Data.TotalValue</b>
+    <ul>
+        @foreach (var item in Model.Data.InvestmentCounts)
+        {
+            <li>@item.Key - @item.Value</li>
+        }
+    </ul>
 </div>
