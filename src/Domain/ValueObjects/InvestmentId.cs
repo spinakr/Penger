@@ -7,8 +7,7 @@ public class InvestmentId : ValueObject
 
     public InvestmentId(string value)
     {
-        if (string.IsNullOrWhiteSpace(value)) throw new InvalidDataException("InvestmentId can not be null");
-        Value = value;
+        Value = NotNullOrEmpty(value);
     }
 
     public static explicit operator InvestmentId(string value)

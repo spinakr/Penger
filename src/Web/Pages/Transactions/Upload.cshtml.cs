@@ -108,15 +108,7 @@ public class Upload : PageModel
                 if (line is null) continue;
 
                 Transaction transaction;
-                try
-                {
-                    transaction = Transaction.ParseFromCSVLine(line);
-                }
-                catch (System.Exception ex)
-                {
-                    System.Console.WriteLine(line);
-                    throw ex;
-                }
+                transaction = Transaction.ParseFromCSVLine(line);
                 var investmentGroup = _investmentGroups[transaction.InvestmentId.ToString()].DisplayName;
                 var investmentType = _investmentTypes[transaction.InvestmentId.ToString()].DisplayName;
                 try

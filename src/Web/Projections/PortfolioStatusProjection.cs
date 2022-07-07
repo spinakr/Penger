@@ -3,6 +3,7 @@ using Domain;
 using Domain.Events;
 using Domain.ValueObjects;
 using MediatR;
+using Newtonsoft.Json;
 using PocketCqrs.Projections;
 
 namespace Web.Projections;
@@ -11,10 +12,10 @@ public class PortfolioStatus
 {
     public string PortfolioId { get; set; }
     public string TotalValue { get; set; }
-    public Dictionary<string, decimal> InvestmentValues { get; } = new();
-    public Dictionary<string, Price> CurrentInvestmentPrices { get; } = new();
-    public Dictionary<string, double> InvestmentCounts { get; } = new();
+    public Dictionary<string, InvestmentStatus> InvestmentStatuses { get; } = new();
+
 }
+public record InvestmentStatus(string InvestmentId, double Amount, decimal Price, decimal Value);
 
 public class PortfolioStatusProjection : INotificationHandler<NewTransactionWasCreated>, INotificationHandler<InvestmentPriceWasUpdated>
 {
@@ -28,16 +29,25 @@ public class PortfolioStatusProjection : INotificationHandler<NewTransactionWasC
 
     public Task Handle(NewTransactionWasCreated @event, CancellationToken token)
     {
+        System.Console.WriteLine(JsonConvert.SerializeObject(@event));
         var projection = _projectionStore.GetProjection(@event.PortfolioId);
 
-        var investmentId = @event.InvestmentId;
         projection.PortfolioId = @event.PortfolioId;
-        var newPrice = new Price(@event.Price, Enumeration.FromDisplayName<CurrencyType>(@event.Currency));
-        UpdateInvestmentPrice(projection, investmentId, newPrice);
+        var investmentId = @event.InvestmentId;
 
-        UpdateInvestmentCounts(@event, projection, investmentId);
+        var transactionPrice = new Price(@event.Price, Enumeration.FromDisplayName<CurrencyType>(@event.Currency));
+        var currentStatus = projection.InvestmentStatuses.GetValueOrDefault(investmentId);
+        var currentAmount = currentStatus?.Amount ?? 0;
+        var newAmount = currentAmount + (@event.TransactionType == TransactionType.Sale.DisplayName ? -1 : 1) * @event.Amount;
+        var newPrice = currentStatus is null ? transactionPrice.Value : currentStatus.Price;
 
-        UpdateInvestmentValues(projection, investmentId);
+        var newInvestmentStatus = new InvestmentStatus(
+            InvestmentId: investmentId,
+            Price: newPrice,
+            Amount: newAmount,
+            Value: newPrice * (decimal)newAmount);
+
+        projection.InvestmentStatuses[investmentId] = newInvestmentStatus;
 
         CalculateTotal(projection);
 
@@ -50,52 +60,36 @@ public class PortfolioStatusProjection : INotificationHandler<NewTransactionWasC
     public Task Handle(InvestmentPriceWasUpdated @event, CancellationToken cancellationToken)
     {
         var projection = _projectionStore.GetProjection(@event.PortfolioId);
-        var newPrice = new Price(@event.NokPrice, CurrencyType.NOK);
-        UpdateInvestmentPrice(projection, @event.InvestmentId, newPrice);
+
+        var investmentId = @event.InvestmentId;
+        projection.PortfolioId = @event.PortfolioId;
+
+        var transactionPrice = new Price(@event.NokPrice, CurrencyType.NOK);
+        var currentStatus = projection.InvestmentStatuses.GetValueOrDefault(investmentId);
+        var currentAmount = currentStatus?.Amount ?? 0;
+        var newPrice = transactionPrice.Value;
+
+        var newInvestmentStatus = new InvestmentStatus(
+            InvestmentId: investmentId,
+            Price: newPrice,
+            Amount: currentAmount,
+            Value: newPrice * (decimal)currentAmount);
+
+        projection.InvestmentStatuses[investmentId] = newInvestmentStatus;
+
         CalculateTotal(projection);
-        UpdateInvestmentValues(projection, @event.InvestmentId);
+
         _projectionStore.Save(@event.PortfolioId, projection);
+
         return Task.CompletedTask;
     }
 
-    private static void UpdateInvestmentValues(PortfolioStatus projection, string investmentId)
-    {
-        if (!projection.InvestmentValues.ContainsKey(investmentId))
-        {
-            projection.InvestmentValues.Add(investmentId, 0);
-        }
-
-        projection.InvestmentValues[investmentId] = (decimal)projection.InvestmentCounts[investmentId] * projection.CurrentInvestmentPrices[investmentId].Value;
-    }
-
-    private static void UpdateInvestmentCounts(NewTransactionWasCreated @event, PortfolioStatus projection, string investmentId)
-    {
-        if (!projection.InvestmentCounts.ContainsKey(investmentId))
-        {
-            projection.InvestmentCounts.Add(investmentId, 0);
-        }
-
-        projection.InvestmentCounts[investmentId] +=
-            (Enumeration.FromDisplayName<TransactionType>(@event.TransactionType) == TransactionType.Sale ? -1 : 1)
-            * @event.Amount;
-    }
 
     private static void CalculateTotal(PortfolioStatus projection)
     {
-        projection.TotalValue = projection.InvestmentCounts
-            .Sum(g => (decimal)g.Value * projection.CurrentInvestmentPrices[g.Key].Value)
+        projection.TotalValue = projection.InvestmentStatuses.Values
+            .Sum(g => g?.Value ?? 0)
             .ToString("C", new CultureInfo("no-NO"));
     }
 
-    private static void UpdateInvestmentPrice(PortfolioStatus projection, string investmentId, Price newPrice)
-    {
-        if (!projection.CurrentInvestmentPrices.ContainsKey(investmentId))
-        {
-            projection.CurrentInvestmentPrices.Add(investmentId, newPrice);
-        }
-        else
-        {
-            projection.CurrentInvestmentPrices[investmentId] = newPrice;
-        }
-    }
 }

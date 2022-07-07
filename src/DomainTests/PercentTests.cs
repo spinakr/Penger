@@ -18,6 +18,13 @@ public class PercentTests
     }
 
     [Test]
+    public void ConstructedFromDecimal_ValueGreatherThan1_ShouldThrow()
+    {
+        ((Action)(() =>
+        new Percent(1.2))).Should().Throw<ArgumentException>();
+    }
+
+    [Test]
     public void ConstructedFromDecimal_ValueBetween0and1_CorrectPercentageValue()
     {
         var percent = new Percent(0.15);

@@ -31,8 +31,9 @@ public class Transaction
         var investmentId = new InvestmentId(parts[1]);
         var type = parts[2] == "Salg" ? TransactionType.Sale : TransactionType.Purchase;
         var amount = double.Parse(string.Concat(parts[3].Where(s => !char.IsWhiteSpace(s) && s != '-')).Replace(',', '.')); //
-        var price = new Price(decimal.Parse(string.Concat(parts[4].Where(c => !char.IsWhiteSpace(c))).Replace(',', '.')), parts[7]);
-        var fee = string.IsNullOrWhiteSpace(parts[5]) ? null : new Price(decimal.Parse(parts[5].Replace(',', '.')), parts[7]);
+        var conversionRate = string.IsNullOrWhiteSpace(parts[6]) ? 1 : decimal.Parse(string.Concat(parts[6].Where(c => !char.IsWhiteSpace(c))).Replace(',', '.')); //
+        var price = new NokPrice(decimal.Parse(string.Concat(parts[4].Where(c => !char.IsWhiteSpace(c))).Replace(',', '.')) * conversionRate);
+        var fee = string.IsNullOrWhiteSpace(parts[5]) ? null : new NokPrice(decimal.Parse(parts[5].Replace(',', '.')) * conversionRate);
 
         return Transaction.CreateNew(investmentId, date, amount, price, fee, type);
     }
