@@ -16,6 +16,7 @@ builder.Services.AddSingleton<IMessaging, Messaging>();
 builder.Services.AddSingleton<IEventStore, EventStore>();
 builder.Services.AddSingleton<IAppendOnlyStore>(new FileAppendOnlyStore("penger-eventstore"));
 builder.Services.AddHostedService<StartupWorker>();
+builder.Services.AddHostedService<PriceWorker>();
 builder.Services.AddSingleton<IProjectionStore<string, PortfolioStatus>>(new FileProjectionStore<string, PortfolioStatus>("penger-eventstore"));
 builder.Services.AddSingleton<IProjectionStore<string, List<RegisteredInvestment>>>(new FileProjectionStore<string, List<RegisteredInvestment>>("penger-eventstore"));
 

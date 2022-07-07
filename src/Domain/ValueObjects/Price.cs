@@ -2,6 +2,14 @@ using Newtonsoft.Json;
 
 namespace Domain.ValueObjects;
 
+public class NokPrice : Price
+{
+    public NokPrice(decimal value) : base(value, CurrencyType.NOK)
+    {
+    }
+
+}
+
 public class Price
 {
     public decimal Value { get; private set; }
@@ -10,6 +18,11 @@ public class Price
 
     public Price(decimal value, string currency) : this(value, Enumeration.FromDisplayName<CurrencyType>(currency))
     {
+    }
+
+    public NokPrice ToNok(double toNokConversionRate)
+    {
+        return new NokPrice(Value * (decimal)toNokConversionRate);
     }
 
     [JsonConstructor]

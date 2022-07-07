@@ -1,4 +1,5 @@
 ﻿@page "{portfolioId=kofoed}"
+@using System.Globalization
 @model Web.Pages.Index
 @{
     ViewData["Title"] = "Index";
@@ -8,12 +9,36 @@
     <h1>Portfolio - @Model.Data.PortfolioId</h1>
     <p class="big-number">@Model.Data.TotalValue</p>
     <table>
+        <tr>
+            <th>
+                Name
+            </th>
+            <th>
+                Amount
+            </th>
+            <th>
+                Price
+            </th>
+            <th>
+                Value
+            </th>
+        </tr>
         @foreach (var item in Model.Data.InvestmentCounts)
         {
             <tr>
                 <td>
-                    @item.Key - @item.Value
+                    @item.Key
                 </td>
+                <td>
+                    @Math.Round(@item.Value,2)
+                </td>
+                <td>
+                    @Model.Data.CurrentInvestmentPrices[item.Key].Value.ToString("C", new CultureInfo("no-NO"))
+                </td>
+                <td>
+                    @Model.Data.InvestmentValues[item.Key].ToString("C", new CultureInfo("no-NO"))
+                </td>
+
             </tr>
         }
     </table>

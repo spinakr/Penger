@@ -59,7 +59,7 @@ public class Upload : PageModel
 
     private Dictionary<string, string> _investmentSymbols = new Dictionary<string, string>
     {
-        {"DNB Global Indeks", "0P0001EFMC.IR"},
+        {"DNB Global Indeks", "0P0000PS3V.IR"},
         {"iShs Autom&Robotics ETF USD A", "2B76.DE"},
         {"KLP Aksje Fremvoksende Markeder Indeks II", "0P0000TJ5D.IR"},
         {"KLP AksjeGlobal Mer Samfunnsansvar", "0P0001DFBS.IR"},
@@ -144,6 +144,7 @@ public class Upload : PageModel
                     Amount = transaction.Amount,
                     Price = transaction.Price.Value,
                     Currency = transaction.Price.Currency.DisplayName,
+                    Type = transaction.Type.DisplayName
                 });
 
             }

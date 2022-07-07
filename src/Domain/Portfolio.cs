@@ -11,6 +11,9 @@ public class Portfolio : EventSourcedAggregate
     public Dictionary<InvestmentGroup, Percent> DesiredDistribution { get; private set; }
     public List<Investment> RegisteredInvestments { get; set; } = new List<Investment>();
     public List<Transaction> Transactions { get; private set; } = new List<Transaction>();
+    private Dictionary<InvestmentId, DateTime> _lastInvestmentPriceUpdate = new Dictionary<InvestmentId, DateTime>();
+
+
 
 
 
@@ -47,8 +50,27 @@ public class Portfolio : EventSourcedAggregate
             investmentType: investment.Type.DisplayName,
             investmentGroup: investment.Group.DisplayName,
             symbol: investment.Symbol,
-            currency: investment.Currency
+            currency: investment.Currency.DisplayName
         ));
+    }
+
+    public void UpdatePrice(InvestmentId investmentId, NokPrice nokPrice, Price price)
+    {
+        var investment = RegisteredInvestments.FirstOrDefault(i => i.Id == investmentId);
+        if (investment is null) throw new InvalidDataException("Investment not found");
+        if (investment.Currency != price.Currency) throw new InvalidDataException("Currency mismatch");
+
+        var lastUpdate = _lastInvestmentPriceUpdate.TryGetValue(investmentId, out var lastUpdateTime) ? lastUpdateTime : DateTime.MinValue;
+        if (lastUpdate.AddDays(1) > DateTime.Now) return;
+
+        Append(new InvestmentPriceWasUpdated(
+            portfolioId: Id,
+            investmentId: investmentId.Value,
+            newPrice: price.Value,
+            newNokPrice: nokPrice.Value,
+            date: DateTime.Now
+        ));
+
     }
 
     public void AddTransaction(Transaction transaction)
@@ -87,6 +109,18 @@ public class Portfolio : EventSourcedAggregate
     public void When(InvestmentWasRegistered @event)
     {
         RegisteredInvestments.Add(new Investment(@event.InvestmentId, @event.InvestmentType, @event.InvestmentGroup, @event.Symbol, @event.Currency));
+    }
+
+    public void When(InvestmentPriceWasUpdated @event)
+    {
+        if (!_lastInvestmentPriceUpdate.ContainsKey(new InvestmentId(@event.InvestmentId)))
+        {
+            _lastInvestmentPriceUpdate.Add(new InvestmentId(@event.InvestmentId), @event.Date);
+        }
+        else
+        {
+            _lastInvestmentPriceUpdate[new InvestmentId(@event.InvestmentId)] = @event.Date;
+        }
     }
 
     public void When(NewTransactionWasCreated @event)

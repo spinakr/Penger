@@ -55,6 +55,14 @@ td {
   padding: 0.5em;
 }
 
+/* style table headers */
+th {
+  background-color: #999;
+  color: #fff;
+  padding: 0.5em;
+  text-align: left;
+}
+
 .big-number {
   font-size: 2em;
   font-weight: bold;

@@ -45,6 +45,9 @@ public class Create : PageModel
         public decimal? Price { get; set; }
         public decimal Fee { get; set; }
         public string Currency { get; set; }
+        public string Type { get; set; }
+
+
     }
 
     public class InvestmentQueryHandler : IRequestHandler<Query, Model>
@@ -95,7 +98,8 @@ public class Create : PageModel
                 cmd.Date,
                 cmd.Amount ?? 0,
                 new Price(cmd.Price ?? 0, Enumeration.FromDisplayName<CurrencyType>(cmd.Currency)),
-                new Price(cmd.Fee, Enumeration.FromDisplayName<CurrencyType>(cmd.Currency))
+                new Price(cmd.Fee, Enumeration.FromDisplayName<CurrencyType>(cmd.Currency)),
+                Enumeration.FromDisplayName<TransactionType>(cmd.Type)
             );
             portfolio.AddTransaction(newTransaction);
 
