@@ -24,3 +24,46 @@ input:invalid {
 input:valid {
   border: 2px solid black;
 }
+
+.button-link {
+  display: inline-block;
+  padding: 0.5em 1em;
+  text-decoration: none;
+  background: #eee;
+  border: 1px solid #999;
+  border-radius: 0.3em;
+  cursor: pointer;
+  box-shadow: 0px 0px 3px 1px rgba(0, 0, 0, 0.2);
+  margin-bottom: 1.5em;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  overflow: hidden;
+  width: 100%;
+  margin: 0 auto;
+}
+
+table tr:nth-child(even) {
+  background-color: #eee;
+}
+
+td {
+  padding: 0.5em;
+}
+
+.big-number {
+  font-size: 2em;
+  font-weight: bold;
+}
+
+input,
+select {
+  border: 1px solid #ccc;
+  border-radius: 0.3em;
+  padding: 0.5em;
+  margin-bottom: 0.5em;
+}

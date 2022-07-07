@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using PocketCqrs.EventStore;
+using Web.Projections;
 
 namespace Web.Pages.Investments;
 
@@ -31,22 +32,24 @@ public class Create : PageModel
 
     public async Task<IActionResult> OnPostAsync()
     {
-        var model = new List<Index.Model.Investment>
+        var model = new List<RegisteredInvestment>
         {
             await _messaging.Send(Data)
         };
         return ViewComponent("Investments", model);
     }
 
-    public class Command : IRequest<Index.Model.Investment>
+    public class Command : IRequest<RegisteredInvestment>
     {
         public string PortfolioId { get; set; }
         public string InvestmentId { get; set; }
         public string InvestmentGroup { get; set; }
         public string InvestmentType { get; set; }
+        public string Symbol { get; set; }
+        public string Currency { get; set; }
     }
 
-    public class CommandHandler : IRequestHandler<Command, Index.Model.Investment>
+    public class CommandHandler : IRequestHandler<Command, RegisteredInvestment>
     {
         public CommandHandler(IEventStore eventStore)
         {
@@ -55,22 +58,17 @@ public class Create : PageModel
 
         private IEventStore _eventStore { get; }
 
-        public Task<Index.Model.Investment> Handle(Command cmd, CancellationToken token)
+        public Task<RegisteredInvestment> Handle(Command cmd, CancellationToken token)
         {
             var stream = _eventStore.LoadEventStream(cmd.PortfolioId);
             var portfolio = new Portfolio(stream.Events);
 
-            var newInvestment = new Investment(cmd.InvestmentId, cmd.InvestmentType, cmd.InvestmentGroup);
+            var newInvestment = new Investment(cmd.InvestmentId, cmd.InvestmentType, cmd.InvestmentGroup, cmd.Symbol, cmd.Currency);
             portfolio.RegisterInvestment(newInvestment);
 
             _eventStore.AppendToStream(portfolio.Id.ToString(), portfolio.PendingEvents, stream.Version);
 
-            return Task.FromResult(new Index.Model.Investment
-            {
-                InvestmentId = cmd.InvestmentId,
-                InvestmentType = cmd.InvestmentType,
-                InvestmentGroup = cmd.InvestmentGroup
-            });
+            return Task.FromResult(new RegisteredInvestment(cmd.InvestmentId, cmd.InvestmentType, cmd.InvestmentGroup, cmd.Symbol, cmd.Currency));
         }
     }
 }

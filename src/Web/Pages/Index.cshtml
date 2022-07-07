@@ -6,11 +6,15 @@
 
 <div>
     <h1>Portfolio - @Model.Data.PortfolioId</h1>
-    <b>@Model.Data.TotalValue</b>
-    <ul>
+    <p class="big-number">@Model.Data.TotalValue</p>
+    <table>
         @foreach (var item in Model.Data.InvestmentCounts)
         {
-            <li>@item.Key - @item.Value</li>
+            <tr>
+                <td>
+                    @item.Key - @item.Value
+                </td>
+            </tr>
         }
-    </ul>
+    </table>
 </div>

@@ -1,12 +1,26 @@
-@model List<Web.Pages.Investments.Index.Model.Investment>
+@model List<Web.Projections.RegisteredInvestment>
 
-<ul class="investment-list">
+<table class="investment-list">
     @foreach (var investment in @Model)
     {
-        <li>
-            <a asp-page="/Investments/">
-                @Html.DisplayFor(modelItem => investment.InvestmentId)
-            </a>
-        </li>
+        <tr>
+            <td>
+                <a asp-page="/Investments/">
+                    @Html.DisplayFor(modelItem => investment.InvestmentId)
+                </a>
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => investment.InvestmentGroup)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => investment.InvestmentType)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => investment.Currency)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => investment.Symbol)
+            </td>
+        </tr>
     }
-</ul>
+</table>

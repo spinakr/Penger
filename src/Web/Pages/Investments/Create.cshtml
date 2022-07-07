@@ -13,7 +13,14 @@
         <div>
             <input asp-for="Data.InvestmentId" type="text" placeholder="Investment name / id" />
         </div>
-
+        <div>
+            <input asp-for="Data.Symbol" type="text" placeholder="Symbol" />
+            <select asp-for="Data.Currency">
+                <option value="NOK" selected>NOK</option>
+                <option value="USD">USD</option>
+                <option value="EUR">EUR</option>
+            </select>
+        </div>
         <div>
             <select asp-for="Data.InvestmentGroup" asp-items="Model.InvestmentGroupOptions">
                 <option value="" selected>Investement group</option>

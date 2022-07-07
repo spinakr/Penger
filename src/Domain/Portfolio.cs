@@ -41,13 +41,14 @@ public class Portfolio : EventSourcedAggregate
     {
         if (RegisteredInvestments.Any(i => i.Id == investment.Id)) throw new InvalidDataException("The same investmentId cannot be registered multiple times");
 
-        Append(new InvestmentWasRegistered
-        {
-            PortfolioId = Id,
-            InvestmentId = investment.Id.Value,
-            InvestmentGroup = investment.Group.DisplayName,
-            InvestmentType = investment.Type.DisplayName
-        });
+        Append(new InvestmentWasRegistered(
+            portfolioId: Id,
+            investmentId: investment.Id.Value,
+            investmentType: investment.Type.DisplayName,
+            investmentGroup: investment.Group.DisplayName,
+            symbol: investment.Symbol,
+            currency: investment.Currency
+        ));
     }
 
     public void AddTransaction(Transaction transaction)
@@ -85,7 +86,7 @@ public class Portfolio : EventSourcedAggregate
 
     public void When(InvestmentWasRegistered @event)
     {
-        RegisteredInvestments.Add(new Investment(@event.InvestmentId, @event.InvestmentType, @event.InvestmentGroup));
+        RegisteredInvestments.Add(new Investment(@event.InvestmentId, @event.InvestmentType, @event.InvestmentGroup, @event.Symbol, @event.Currency));
     }
 
     public void When(NewTransactionWasCreated @event)

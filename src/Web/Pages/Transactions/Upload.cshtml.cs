@@ -34,7 +34,7 @@ public class Upload : PageModel
         {"iShs Glbl Clean Engy ETF", InvestmentGroup.TechETF},
         {"iS S&P 500", InvestmentGroup.TechETF},
         {"VanEck Gold Miners UETF USD A", InvestmentGroup.Gold},
-        {"Gull (gram)", InvestmentGroup.Gold}
+        {"Gull", InvestmentGroup.Gold}
     };
 
     private Dictionary<string, InvestmentType> _investmentTypes = new Dictionary<string, InvestmentType>
@@ -54,7 +54,47 @@ public class Upload : PageModel
         {"iShs Glbl Clean Engy ETF", InvestmentType.ETF},
         {"iS S&P 500", InvestmentType.ETF},
         {"VanEck Gold Miners UETF USD A", InvestmentType.Commodity},
-        {"Gull (gram)", InvestmentType.Commodity}
+        {"Gull", InvestmentType.Commodity}
+    };
+
+    private Dictionary<string, string> _investmentSymbols = new Dictionary<string, string>
+    {
+        {"DNB Global Indeks", "0P0001EFMC.IR"},
+        {"iShs Autom&Robotics ETF USD A", "2B76.DE"},
+        {"KLP Aksje Fremvoksende Markeder Indeks II", "0P0000TJ5D.IR"},
+        {"KLP AksjeGlobal Mer Samfunnsansvar", "0P0001DFBS.IR"},
+        {"VanEck VecVidG&eSUCITSETFUSDA", "ESP0.DE"},
+        {"Etherum", "ETH-USD"},
+        {"Desert Control AS", "DSRT.OL"},
+        {"Bitcoin", "BTC-USD"},
+        {"Cardano", "ADA-USD"},
+        {"Ergo", "ERG-USD"},
+        {"Nano", "XNO-USD"},
+        {"Algorand", "ALGO-USD"},
+        {"iShs Glbl Clean Engy ETF", "IQQH.DE"},
+        {"iS S&P 500", "QDVE.DE"},
+        {"VanEck Gold Miners UETF USD A", "G2X.DE"},
+        {"Gull", "GC=F"}
+    };
+
+    private Dictionary<string, string> _investmentCurrency = new Dictionary<string, string>
+    {
+        {"DNB Global Indeks", "NOK"},
+        {"iShs Autom&Robotics ETF USD A", "EUR"},
+        {"KLP Aksje Fremvoksende Markeder Indeks II", "NOK"},
+        {"KLP AksjeGlobal Mer Samfunnsansvar", "NOK"},
+        {"VanEck VecVidG&eSUCITSETFUSDA", "EUR"},
+        {"Etherum", "USD"},
+        {"Desert Control AS", "NOK"},
+        {"Bitcoin", "USD"},
+        {"Cardano", "USD"},
+        {"Ergo", "USD"},
+        {"Nano", "USD"},
+        {"Algorand", "USD"},
+        {"iShs Glbl Clean Engy ETF", "EUR"},
+        {"iS S&P 500", "EUR"},
+        {"VanEck Gold Miners UETF USD A", "EUR"},
+        {"Gull", "USD"}
     };
 
     public async Task<IActionResult> OnPostUploadAsync()
@@ -86,7 +126,9 @@ public class Upload : PageModel
                         InvestmentId = transaction.InvestmentId.ToString(),
                         InvestmentGroup = investmentGroup,
                         InvestmentType = investmentType,
-                        PortfolioId = "kofoed"
+                        PortfolioId = "kofoed",
+                        Symbol = _investmentSymbols[transaction.InvestmentId.ToString()],
+                        Currency = _investmentCurrency[transaction.InvestmentId.ToString()]
                     });
                 }
                 catch (System.Exception ex)

@@ -4,7 +4,7 @@ using PocketCqrs.Projections;
 
 namespace Web.Projections;
 
-public record RegisteredInvestment(string InvestmentId, string InvestmentType, string InvestmentGroup);
+public record RegisteredInvestment(string InvestmentId, string InvestmentType, string InvestmentGroup, string Symbol, string Currency);
 
 public class RegisteredInvestmentsProjection : INotificationHandler<InvestmentWasRegistered>
 {
@@ -19,7 +19,7 @@ public class RegisteredInvestmentsProjection : INotificationHandler<InvestmentWa
     {
         var projection = _projectionStore.GetProjection(@event.PortfolioId);
 
-        projection.Add(new RegisteredInvestment(@event.InvestmentId, @event.InvestmentType, @event.InvestmentGroup));
+        projection.Add(new RegisteredInvestment(@event.InvestmentId, @event.InvestmentType, @event.InvestmentGroup, @event.Symbol, @event.Currency));
 
         _projectionStore.Save(@event.PortfolioId, projection);
 

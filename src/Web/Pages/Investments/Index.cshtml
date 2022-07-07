@@ -6,6 +6,7 @@
 
 <div>
     <h1>Investments </h1>
+    <a asp-page="/Investments/Create" up-layer="new" class="button-link">Create New</a>
+
     @await Component.InvokeAsync("Investments", Model.Data.Investments)
-    <a asp-page="/Investments/Create" up-layer="new">Create New</a>
 </div>

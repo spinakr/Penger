@@ -13,7 +13,7 @@ public class TransactionTests
     public void Portfolio_CreateNewPortfolio_ReturnsValidPortfolio()
     {
         var port = Portfolio.CreateNew("TEST");
-        port.RegisterInvestment(new Investment("Gold", InvestmentType.Commodity.DisplayName, InvestmentGroup.Gold.DisplayName));
+        port.RegisterInvestment(new Investment("Gold", InvestmentType.Commodity.DisplayName, InvestmentGroup.Gold.DisplayName, "Gold", "USD"));
         port.AddTransaction(
             Transaction.CreateNew(new InvestmentId("Gold"),
             DateTime.Now,

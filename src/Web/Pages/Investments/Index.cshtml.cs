@@ -14,14 +14,7 @@ public class Index : PageModel
 
     public record Model
     {
-        public List<Investment> Investments { get; set; }
-
-        public record Investment
-        {
-            public string InvestmentId { get; set; }
-            public string InvestmentType { get; set; }
-            public string InvestmentGroup { get; set; }
-        }
+        public List<RegisteredInvestment> Investments { get; set; }
     }
 
     public class Query : IRequest<Model>
@@ -48,13 +41,7 @@ public class Index : PageModel
 
             return Task.FromResult(new Model
             {
-                Investments = projection.Select(i =>
-                    new Model.Investment
-                    {
-                        InvestmentId = i.InvestmentId,
-                        InvestmentGroup = i.InvestmentGroup,
-                        InvestmentType = i.InvestmentType
-                    }).ToList()
+                Investments = projection
             });
         }
     }
