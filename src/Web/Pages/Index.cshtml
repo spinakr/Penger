@@ -23,7 +23,7 @@
                 Value
             </th>
         </tr>
-        @foreach (var item in Model.Data.InvestmentStatuses.Values)
+        @foreach (var item in Model.Data.InvestmentStatuses.Values.OrderByDescending(x => x.Value))
         {
             <tr>
                 <td>

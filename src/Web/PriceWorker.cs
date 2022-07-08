@@ -33,12 +33,9 @@ public class PriceWorker : BackgroundService
             var currencyJson = JsonSerializer.Deserialize<JsonElement>(currencyString);
             var usdToNok = 1 / currencyJson.GetProperty("rates").GetProperty("USD").GetDouble();
             var eurToNok = 1 / currencyJson.GetProperty("rates").GetProperty("EUR").GetDouble();
-            System.Console.WriteLine($"USD to NOK: {usdToNok}");
-            System.Console.WriteLine($"EUR to NOK: {eurToNok}");
             foreach (var investment in portfolio.RegisteredInvestments)
             {
                 var url = string.Format(_configuration.GetValue<string>("PriceServiceUrlTemplate"), investment.Symbol);
-                System.Console.WriteLine(url);
                 var html = await client.GetStringAsync(url);
 
                 HtmlDocument htmlDoc = new HtmlDocument();
@@ -48,8 +45,6 @@ public class PriceWorker : BackgroundService
                     .Where(node => node.GetAttributeValue("data-test", "") == "PREV_CLOSE-value" ||
                                    node.GetAttributeValue("data-test", "") == "LAST_PRICE-value")
                     .First();
-
-                System.Console.WriteLine($"Updating price of {investment.Symbol} to {priceNode.InnerText}");
 
                 var newPriceValue = decimal.Parse(priceNode.InnerText);
                 var newPrice = new Price(newPriceValue, investment.Currency);

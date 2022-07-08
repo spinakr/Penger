@@ -12,7 +12,7 @@ public class PortfolioStatus
 {
     public string PortfolioId { get; set; }
     public string TotalValue { get; set; }
-    public Dictionary<string, InvestmentStatus> InvestmentStatuses { get; } = new();
+    public Dictionary<string, InvestmentStatus> InvestmentStatuses { get; set; } = new();
 
 }
 public record InvestmentStatus(string InvestmentId, double Amount, decimal Price, decimal Value);
@@ -29,7 +29,6 @@ public class PortfolioStatusProjection : INotificationHandler<NewTransactionWasC
 
     public Task Handle(NewTransactionWasCreated @event, CancellationToken token)
     {
-        System.Console.WriteLine(JsonConvert.SerializeObject(@event));
         var projection = _projectionStore.GetProjection(@event.PortfolioId);
 
         projection.PortfolioId = @event.PortfolioId;
@@ -90,6 +89,10 @@ public class PortfolioStatusProjection : INotificationHandler<NewTransactionWasC
         projection.TotalValue = projection.InvestmentStatuses.Values
             .Sum(g => g?.Value ?? 0)
             .ToString("C", new CultureInfo("no-NO"));
+
+        projection.InvestmentStatuses = projection.InvestmentStatuses
+            .OrderByDescending(g => g.Value.Value)
+            .ToDictionary(g => g.Key, g => g.Value);
     }
 
 }
