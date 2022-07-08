@@ -15,7 +15,8 @@ public class TransactionTests
         var port = Portfolio.CreateNew("TEST");
         port.RegisterInvestment(new Investment("Gold", InvestmentType.Commodity.DisplayName, InvestmentGroup.Gold.DisplayName, "Gold", "USD"));
         port.AddTransaction(
-            Transaction.CreateNew(new InvestmentId("Gold"),
+            new Transaction(new InvestmentId("Gold"),
+            new TransactionId(),
             DateTime.Now,
             amount: 100,
             price: new Price(50.5m, CurrencyType.NOK),

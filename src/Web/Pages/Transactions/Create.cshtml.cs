@@ -93,8 +93,9 @@ public class Create : PageModel
             var stream = _eventStore.LoadEventStream(cmd.PortfolioId);
             var portfolio = new Portfolio(stream.Events);
 
-            var newTransaction = Transaction.CreateNew(
+            var newTransaction = new Transaction(
                 new InvestmentId(cmd.InvestmentId),
+                new TransactionId(),
                 cmd.Date,
                 cmd.Amount ?? 0,
                 new Price(cmd.Price ?? 0, Enumeration.FromDisplayName<CurrencyType>(cmd.Currency)),

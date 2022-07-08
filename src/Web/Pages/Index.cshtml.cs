@@ -1,9 +1,8 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using PocketCqrs;
 using PocketCqrs.EventStore;
 using PocketCqrs.Projections;
-using Web.Projections;
+using Domain.Projections;
 
 namespace Web.Pages;
 

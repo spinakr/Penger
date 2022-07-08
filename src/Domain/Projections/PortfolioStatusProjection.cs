@@ -1,12 +1,10 @@
 using System.Globalization;
-using Domain;
 using Domain.Events;
 using Domain.ValueObjects;
 using MediatR;
-using Newtonsoft.Json;
 using PocketCqrs.Projections;
 
-namespace Web.Projections;
+namespace Domain.Projections;
 
 public class PortfolioStatus
 {

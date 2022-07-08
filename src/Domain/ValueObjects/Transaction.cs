@@ -12,7 +12,8 @@ public class Transaction
     public Price Price { get; private set; }
     public Price Fee { get; private set; }
 
-    public Transaction(InvestmentId investmentId, TransactionId transactionId, DateTime date, double amount, Price price, Price fee, TransactionType? type = null)
+    public Transaction(InvestmentId investmentId, TransactionId transactionId, DateTime date,
+        double amount, Price price, Price fee, TransactionType? type = null)
     {
         TransactionId = transactionId;
         InvestmentId = investmentId;
@@ -35,12 +36,6 @@ public class Transaction
         var price = new NokPrice(decimal.Parse(string.Concat(parts[4].Where(c => !char.IsWhiteSpace(c))).Replace(',', '.')) * conversionRate);
         var fee = string.IsNullOrWhiteSpace(parts[5]) ? null : new NokPrice(decimal.Parse(parts[5].Replace(',', '.')) * conversionRate);
 
-        return Transaction.CreateNew(investmentId, date, amount, price, fee, type);
-    }
-
-    public static Transaction CreateNew(InvestmentId investmentId, DateTime date, double amount, Price price, Price fee, TransactionType? type = null)
-    {
-        //TODO: transaction rules
         return new Transaction(investmentId, new TransactionId(), date, amount, price, fee, type);
     }
 }

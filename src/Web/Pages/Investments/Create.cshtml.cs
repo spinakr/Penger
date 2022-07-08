@@ -1,11 +1,11 @@
 using Domain;
+using Domain.Projections;
 using Domain.ValueObjects;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using PocketCqrs.EventStore;
-using Web.Projections;
 
 namespace Web.Pages.Investments;
 

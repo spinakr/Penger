@@ -2,7 +2,7 @@ using Domain.Events;
 using MediatR;
 using PocketCqrs.Projections;
 
-namespace Web.Projections;
+namespace Domain.Projections;
 
 public record RegisteredInvestment(string InvestmentId, string InvestmentType, string InvestmentGroup, string Symbol, string Currency);
 

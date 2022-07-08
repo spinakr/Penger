@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using Web.Projections;
+using Domain.Projections;
 
 namespace Web.ViewComponents;
 

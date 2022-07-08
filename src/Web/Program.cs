@@ -5,7 +5,7 @@ using PocketCqrs.EventStore;
 using PocketCqrs.Projections;
 using Web;
 using Web.Commands;
-using Web.Projections;
+using Domain.Projections;
 
 var builder = WebApplication.CreateBuilder(args);
 

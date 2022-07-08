@@ -1,3 +1,4 @@
+using Domain.Projections;
 using Domain.ValueObjects;
 using FluentAssertions;
 using MediatR;
@@ -6,7 +7,6 @@ using PocketCqrs;
 using PocketCqrs.EventStore;
 using PocketCqrs.Projections;
 using Web.Commands;
-using Web.Projections;
 
 namespace IntegrationTests;
 

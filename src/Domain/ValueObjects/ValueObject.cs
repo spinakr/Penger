@@ -29,7 +29,7 @@ public abstract class ValueObject
 
         return this.GetEqualityComponents().SequenceEqual(other.GetEqualityComponents());
     }
-    
+
     public static bool operator ==(ValueObject one, ValueObject two)
     {
         return EqualOperator(one, two);
