@@ -1,6 +1,23 @@
 @model List<Domain.Projections.RegisteredInvestment>
 
 <table class="investment-list">
+    <tr>
+        <th>
+            Name
+        </th>
+        <th>
+            Group
+        </th>
+        <th>
+            Type
+        </th>
+        <th>
+            Currency
+        </th>
+        <th>
+            Symbol
+        </th>
+    </tr>
     @foreach (var investment in @Model)
     {
         <tr>

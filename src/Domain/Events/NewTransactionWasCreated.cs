@@ -5,15 +5,29 @@ namespace Domain.Events
 {
     public class NewTransactionWasCreated : IEvent, INotification
     {
-        public string PortfolioId { get; set; }
-        public DateTime Date { get; set; }
-        public string InvestmentId { get; set; }
-        public Guid TransactionId { get; set; }
-        public string TransactionType { get; set; }
-        public double Amount { get; set; }
-        public decimal Price { get; set; }
-        public decimal Fee { get; set; }
-        public string Currency { get; set; }
+        public NewTransactionWasCreated(string portfoliId, DateTime date, string investmentId, Guid transactionId,
+            double amount, decimal price, decimal fee, string currency, string transactionType)
+        {
+            PortfolioId = portfoliId;
+            Date = date;
+            InvestmentId = investmentId;
+            TransactionId = transactionId;
+            Amount = amount;
+            Price = price;
+            Currency = currency;
+            TransactionType = transactionType;
+            Fee = fee;
+        }
+
+        public string PortfolioId { get; }
+        public DateTime Date { get; }
+        public string InvestmentId { get; }
+        public Guid TransactionId { get; }
+        public string TransactionType { get; }
+        public double Amount { get; }
+        public decimal Price { get; }
+        public decimal Fee { get; }
+        public string Currency { get; }
 
     }
 }

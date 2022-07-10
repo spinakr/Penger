@@ -5,7 +5,8 @@ namespace Domain.Events;
 
 public class InvestmentPriceWasUpdated : IEvent, INotification
 {
-    public InvestmentPriceWasUpdated(string portfolioId, string investmentId, decimal newNokPrice, decimal newPrice, DateTime date)
+    public InvestmentPriceWasUpdated(string portfolioId, string investmentId,
+        decimal newNokPrice, decimal newPrice, DateTime date)
     {
         PortfolioId = portfolioId;
         InvestmentId = investmentId;
@@ -14,9 +15,9 @@ public class InvestmentPriceWasUpdated : IEvent, INotification
         Price = newPrice;
     }
 
-    public string PortfolioId { get; set; }
-    public string InvestmentId { get; set; }
-    public decimal NokPrice { get; set; }
-    public decimal Price { get; set; }
-    public DateTime Date { get; set; }
+    public string PortfolioId { get; }
+    public string InvestmentId { get; }
+    public decimal NokPrice { get; }
+    public decimal Price { get; }
+    public DateTime Date { get; }
 }

@@ -5,6 +5,10 @@ namespace Domain.Events
 {
     public class PortfolioCreated : IEvent, INotification
     {
-        public string PortfolioId { get; set; }
+        public PortfolioCreated(string portfolioId)
+        {
+            PortfolioId = portfolioId;
+        }
+        public string PortfolioId { get; }
     }
 }

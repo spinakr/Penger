@@ -5,7 +5,8 @@ namespace Domain.Events
 {
     public class InvestmentWasRegistered : IEvent, INotification
     {
-        public InvestmentWasRegistered(string portfolioId, string investmentId, string investmentGroup, string investmentType, string currency, string symbol)
+        public InvestmentWasRegistered(string portfolioId, string investmentId, string investmentGroup,
+            string investmentType, string currency, string symbol)
         {
             PortfolioId = portfolioId;
             InvestmentId = investmentId;

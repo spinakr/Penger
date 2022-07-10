@@ -19,10 +19,7 @@ public class Portfolio : EventSourcedAggregate
 
     public static Portfolio CreateNew(string name)
     {
-        var @event = new PortfolioCreated
-        {
-            PortfolioId = name
-        };
+        var @event = new PortfolioCreated(name);
         var newPortfolio = new Portfolio();
         newPortfolio.Append(@event);
         return newPortfolio;
@@ -33,11 +30,7 @@ public class Portfolio : EventSourcedAggregate
         if (distribution.Values.Sum(v => v.Fraction) != 1) throw new InvalidDataException("Distribution must sum to exactly 100%");
         if (distribution.Keys.GroupBy(x => x.Value).Any(x => x.Count() > 1)) throw new InvalidDataException("Distribution can only have one of each investment");
 
-        Append(new PortfolioDistributionWasChanged
-        {
-            PortfolioId = Id,
-            Distribution = distribution.ToDictionary(x => x.Key.DisplayName, x => x.Value.Fraction)
-        });
+        Append(new PortfolioDistributionWasChanged(Id, distribution.ToDictionary(x => x.Key.DisplayName, x => x.Value.Fraction)));
     }
 
     public void RegisterInvestment(Investment investment)
@@ -61,7 +54,7 @@ public class Portfolio : EventSourcedAggregate
         if (investment.Currency != price.Currency) throw new InvalidDataException("Currency mismatch");
 
         var lastUpdate = _lastInvestmentPriceUpdate.TryGetValue(investmentId, out var lastUpdateTime) ? lastUpdateTime : DateTime.MinValue;
-        if (lastUpdate.AddDays(1) > DateTime.Now) return;
+        // if (lastUpdate.AddDays(1) > DateTime.Now) return;
 
         Append(new InvestmentPriceWasUpdated(
             portfolioId: Id,
@@ -77,18 +70,9 @@ public class Portfolio : EventSourcedAggregate
     {
         if (!RegisteredInvestments.Any(i => i.Id == transaction.InvestmentId)) throw new InvalidOperationException("Transaction cannot be registered for an investement that is not registered first");
 
-        Append(new NewTransactionWasCreated
-        {
-            PortfolioId = Id,
-            Date = transaction.Date,
-            InvestmentId = transaction.InvestmentId.Value,
-            TransactionId = transaction.TransactionId.Value,
-            TransactionType = transaction.Type.DisplayName,
-            Amount = transaction.Amount,
-            Price = transaction.Price.Value,
-            Fee = transaction.Fee.Value,
-            Currency = transaction.Price.Currency.DisplayName
-        });
+        Append(new NewTransactionWasCreated(Id, transaction.Date, transaction.InvestmentId.Value,
+            transaction.TransactionId.Value, transaction.Amount, transaction.Price.Value, transaction.Fee.Value,
+            transaction.Price.Currency.DisplayName, transaction.Type.DisplayName));
     }
 
 

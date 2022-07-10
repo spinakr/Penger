@@ -1,3 +1,4 @@
+using Domain;
 using Domain.ValueObjects;
 using MediatR;
 using PocketCqrs;
@@ -11,6 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRazorPages();
 builder.Services.AddHandlers(typeof(CreatePortfolioCommandHandler).Assembly);
+builder.Services.AddHandlers(typeof(Portfolio).Assembly);
 
 builder.Services.AddSingleton<IMessaging, Messaging>();
 builder.Services.AddSingleton<IEventStore, EventStore>();
@@ -21,6 +23,7 @@ builder.Services.AddSingleton<IProjectionStore<string, PortfolioStatus>>(new Fil
 builder.Services.AddSingleton<IProjectionStore<string, List<RegisteredInvestment>>>(new FileProjectionStore<string, List<RegisteredInvestment>>("penger-eventstore"));
 
 builder.Services.AddMediatR(typeof(Program));
+builder.Services.AddMediatR(typeof(Portfolio));
 
 
 var app = builder.Build();

@@ -1,12 +1,27 @@
 @model List<Web.Pages.Transactions.Index.Model.Transaction>
 
 <table class="transaction-list">
-    @foreach (var transaction in @Model)
+    <tr>
+        <th>
+            Date
+        </th>
+        <th>
+            Investment
+        </th>
+        <th>
+            Price
+        </th>
+        <th>
+            Amount
+        </th>
+    </tr>
+    @foreach (var transaction in @Model.OrderByDescending(t => t.Date))
     {
         <tr>
             <td>
                 <a asp-page="/Transactions/" asp-route-id="@transaction.TransactionId">
-                    @transaction.TransactionId.Substring(0, 5)
+                    @transaction.Date.ToString("dd.MM.yyyy")
+
                 </a>
             </td>
             <td>@transaction.InvestmentId</td>

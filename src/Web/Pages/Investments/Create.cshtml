@@ -7,7 +7,7 @@
 <div>
     <h1>Create Investment </h1>
 
-    <form method="post" up-target=".investment-list:after" up-layer="root">
+    <form method="post" up-target=".investment-list:before" up-layer="root">
         <h3>Portfolio: @Model.Data.PortfolioId</h3>
         @Html.HiddenFor(x => x.Data.PortfolioId)
         <div>

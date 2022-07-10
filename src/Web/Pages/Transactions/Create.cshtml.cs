@@ -100,7 +100,7 @@ public class Create : PageModel
                 cmd.Amount ?? 0,
                 new Price(cmd.Price ?? 0, Enumeration.FromDisplayName<CurrencyType>(cmd.Currency)),
                 new Price(cmd.Fee, Enumeration.FromDisplayName<CurrencyType>(cmd.Currency)),
-                Enumeration.FromDisplayName<TransactionType>(cmd.Type)
+                string.IsNullOrWhiteSpace(cmd.Type) ? null : Enumeration.FromDisplayName<TransactionType>(cmd.Type)
             );
             portfolio.AddTransaction(newTransaction);
 
