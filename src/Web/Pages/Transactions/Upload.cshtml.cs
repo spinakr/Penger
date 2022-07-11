@@ -1,10 +1,7 @@
-using System.Text;
-using Domain;
 using Domain.ValueObjects;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using PocketCqrs.EventStore;
 
 namespace Web.Pages.Transactions;
 
@@ -133,7 +130,7 @@ public class Upload : PageModel
                     PortfolioId = "kofoed",
                     InvestmentId = transaction.InvestmentId.ToString(),
                     Date = transaction.Date,
-                    Amount = transaction.Amount,
+                    Amount = transaction.Amount.Value,
                     Price = transaction.Price.Value,
                     Currency = transaction.Price.Currency.DisplayName,
                     Type = transaction.Type.DisplayName

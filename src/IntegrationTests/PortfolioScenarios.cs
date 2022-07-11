@@ -26,7 +26,6 @@ public class PortfolioScenarios
             .AddSingleton<IProjectionStore<string, PortfolioStatus>, FileProjectionStore<string, PortfolioStatus>>()
             .BuildServiceProvider();
 
-
         _messaging = provider.GetRequiredService<IMediator>();
     }
 
@@ -40,7 +39,43 @@ public class PortfolioScenarios
             PortfolioId = id,
             InvestmentId = "Gold",
             InvestmentGroup = InvestmentGroup.Gold.DisplayName,
-            InvestmentType = InvestmentType.Commodity.DisplayName
+            InvestmentType = InvestmentType.Commodity.DisplayName,
+            Currency = "USD",
+            Symbol = "GC=F",
+        });
+
+        await _messaging.Send(new Web.Pages.Transactions.Create.Command
+        {
+            PortfolioId = id,
+            Date = DateTime.Now,
+            InvestmentId = "Gold",
+            Amount = 10,
+            Price = new decimal(10.5),
+            Fee = 5,
+            Currency = "NOK"
+        });
+
+        var reloadedPort = await _messaging.Send(new Web.Pages.Transactions.Index.Query
+        {
+            PortfolioId = id
+        });
+
+        reloadedPort.Transactions.Count.Should().Be(1);
+    }
+
+    [Test]
+    public async Task PortfolioStatusProjection_AddTransactions_SumsCorrectly()
+    {
+        var id = await _messaging.Send(new CreatePortfolioCommand { Name = "Test" });
+
+        await _messaging.Send(new Web.Pages.Investments.Create.Command
+        {
+            PortfolioId = id,
+            InvestmentId = "Gold",
+            InvestmentGroup = InvestmentGroup.Gold.DisplayName,
+            InvestmentType = InvestmentType.Commodity.DisplayName,
+            Currency = "USD",
+            Symbol = "GC=F",
         });
 
         await _messaging.Send(new Web.Pages.Transactions.Create.Command

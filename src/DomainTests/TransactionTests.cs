@@ -6,9 +6,6 @@ namespace DomainTests;
 
 public class TransactionTests
 {
-
-
-
     [Test]
     public void Portfolio_CreateNewPortfolio_ReturnsValidPortfolio()
     {
@@ -18,7 +15,7 @@ public class TransactionTests
             new Transaction(new InvestmentId("Gold"),
             new TransactionId(),
             DateTime.Now,
-            amount: 100,
+            amount: new Amount(100),
             price: new Price(50.5m, CurrencyType.NOK),
             fee: new Price(5, CurrencyType.NOK)
         ));

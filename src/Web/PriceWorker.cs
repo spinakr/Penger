@@ -35,7 +35,7 @@ public class PriceWorker : BackgroundService
             var eurToNok = 1 / currencyJson.GetProperty("rates").GetProperty("EUR").GetDouble();
             foreach (var investment in portfolio.RegisteredInvestments)
             {
-                var url = string.Format(_configuration.GetValue<string>("PriceServiceUrlTemplate"), investment.Symbol);
+                var url = string.Format(_configuration.GetValue<string>("PriceServiceUrlTemplate"), investment.Symbol.Value);
                 var html = await client.GetStringAsync(url);
 
                 HtmlDocument htmlDoc = new HtmlDocument();

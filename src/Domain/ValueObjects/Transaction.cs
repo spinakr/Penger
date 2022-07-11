@@ -8,12 +8,12 @@ public class Transaction
     public TransactionType Type { get; set; }
 
 
-    public double Amount { get; private set; }
+    public Amount Amount { get; private set; }
     public Price Price { get; private set; }
     public Price Fee { get; private set; }
 
     public Transaction(InvestmentId investmentId, TransactionId transactionId, DateTime date,
-        double amount, Price price, Price fee, TransactionType? type = null)
+        Amount amount, Price price, Price fee, TransactionType? type = null)
     {
         TransactionId = transactionId;
         InvestmentId = investmentId;
@@ -36,6 +36,6 @@ public class Transaction
         var price = new NokPrice(decimal.Parse(string.Concat(parts[4].Where(c => !char.IsWhiteSpace(c))).Replace(',', '.')) * conversionRate);
         var fee = string.IsNullOrWhiteSpace(parts[5]) ? null : new NokPrice(decimal.Parse(parts[5].Replace(',', '.')) * conversionRate);
 
-        return new Transaction(investmentId, new TransactionId(), date, amount, price, fee, type);
+        return new Transaction(investmentId, new TransactionId(), date, new Amount(amount), price, fee, type);
     }
 }

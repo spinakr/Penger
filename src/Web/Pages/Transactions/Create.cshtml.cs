@@ -97,7 +97,7 @@ public class Create : PageModel
                 new InvestmentId(cmd.InvestmentId),
                 new TransactionId(),
                 cmd.Date,
-                cmd.Amount ?? 0,
+                new Amount(cmd.Amount ?? 0),
                 new Price(cmd.Price ?? 0, Enumeration.FromDisplayName<CurrencyType>(cmd.Currency)),
                 new Price(cmd.Fee, Enumeration.FromDisplayName<CurrencyType>(cmd.Currency)),
                 string.IsNullOrWhiteSpace(cmd.Type) ? null : Enumeration.FromDisplayName<TransactionType>(cmd.Type)
@@ -111,7 +111,7 @@ public class Create : PageModel
                 TransactionId = newTransaction.TransactionId.Value.ToString(),
                 InvestmentId = newTransaction.InvestmentId.Value.ToString(),
                 Date = newTransaction.Date,
-                Amount = newTransaction.Amount,
+                Amount = newTransaction.Amount.Value,
                 Price = newTransaction.Price.Value,
                 Fee = newTransaction.Fee.Value,
                 Currency = newTransaction.Price.Currency.DisplayName

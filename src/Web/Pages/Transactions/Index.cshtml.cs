@@ -1,7 +1,6 @@
 using Domain;
 using MediatR;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using PocketCqrs;
 using PocketCqrs.EventStore;
 
 namespace Web.Pages.Transactions;
@@ -61,7 +60,7 @@ public class Index : PageModel
                         InvestmentId = t.InvestmentId.Value,
                         TransactionId = t.TransactionId.Value.ToString(),
                         Date = t.Date,
-                        Amount = t.Amount,
+                        Amount = t.Amount.Value,
                         Price = t.Price.Value,
                         Fee = t.Fee.Value,
                         Currency = t.Price.Currency.DisplayName

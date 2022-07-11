@@ -7,9 +7,9 @@ public class Investment : ValueObject
     public InvestmentType Type { get; private set; }
     public InvestmentGroup Group { get; private set; }
     public CurrencyType Currency { get; private set; }
-    public string Symbol { get; private set; }
+    public Symbol Symbol { get; private set; }
 
-    public Investment(InvestmentId id, InvestmentType type, InvestmentGroup group, string symbol, CurrencyType currency)
+    public Investment(InvestmentId id, InvestmentType type, InvestmentGroup group, Symbol symbol, CurrencyType currency)
     {
         Id = id;
         Type = type;
@@ -24,7 +24,7 @@ public class Investment : ValueObject
         Type = Enumeration.FromDisplayName<InvestmentType>(type);
         Group = Enumeration.FromDisplayName<InvestmentGroup>(group);
         Currency = Enumeration.FromDisplayName<CurrencyType>(currency);
-        Symbol = symbol;
+        Symbol = new Symbol(symbol);
     }
 
     protected override IEnumerable<object> GetEqualityComponents()

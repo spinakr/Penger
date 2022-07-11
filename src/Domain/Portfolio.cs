@@ -42,7 +42,7 @@ public class Portfolio : EventSourcedAggregate
             investmentId: investment.Id.Value,
             investmentType: investment.Type.DisplayName,
             investmentGroup: investment.Group.DisplayName,
-            symbol: investment.Symbol,
+            symbol: investment.Symbol.Value,
             currency: investment.Currency.DisplayName
         ));
     }
@@ -54,7 +54,7 @@ public class Portfolio : EventSourcedAggregate
         if (investment.Currency != price.Currency) throw new InvalidDataException("Currency mismatch");
 
         var lastUpdate = _lastInvestmentPriceUpdate.TryGetValue(investmentId, out var lastUpdateTime) ? lastUpdateTime : DateTime.MinValue;
-        // if (lastUpdate.AddDays(1) > DateTime.Now) return;
+        if (lastUpdate.AddDays(1) > DateTime.Now) return;
 
         Append(new InvestmentPriceWasUpdated(
             portfolioId: Id,
@@ -71,7 +71,7 @@ public class Portfolio : EventSourcedAggregate
         if (!RegisteredInvestments.Any(i => i.Id == transaction.InvestmentId)) throw new InvalidOperationException("Transaction cannot be registered for an investement that is not registered first");
 
         Append(new NewTransactionWasCreated(Id, transaction.Date, transaction.InvestmentId.Value,
-            transaction.TransactionId.Value, transaction.Amount, transaction.Price.Value, transaction.Fee.Value,
+            transaction.TransactionId.Value, transaction.Amount.Value, transaction.Price.Value, transaction.Fee.Value,
             transaction.Price.Currency.DisplayName, transaction.Type.DisplayName));
     }
 
@@ -113,7 +113,7 @@ public class Portfolio : EventSourcedAggregate
             new InvestmentId(@event.InvestmentId),
             new TransactionId(@event.TransactionId),
             @event.Date,
-            @event.Amount,
+            new Amount(@event.Amount),
             new Price(@event.Price, @event.Currency),
             new Price(@event.Fee, @event.Currency),
             Enumeration.FromDisplayName<TransactionType>(@event.TransactionType)

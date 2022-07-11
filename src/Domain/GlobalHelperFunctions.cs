@@ -29,4 +29,13 @@ public class GlobalHelperFunctions
             throw new ArgumentException(message);
         }
     }
+
+    public static string Matches(string str, string pattern)
+    {
+        if (!System.Text.RegularExpressions.Regex.IsMatch(str, pattern))
+        {
+            throw new ArgumentException($"Argument {nameof(str)} does not match pattern {pattern}");
+        }
+        return str;
+    }
 }
