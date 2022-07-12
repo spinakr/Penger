@@ -1,15 +1,24 @@
+
+using Newtonsoft.Json;
+
 namespace Domain.ValueObjects;
 
 public class Percent : IComparable<Percent>
 {
-    private readonly double percent;
-    public double Fraction => percent / 100;
-    public double PercentageValue => percent;
+    private readonly double fractionValue;
+    public double Fraction => fractionValue;
+    [JsonIgnore]
+    public double PercentageValue => fractionValue * 100;
 
+    public Percent(decimal fraction) : this((double)fraction)
+    {
+    }
+
+    [JsonConstructor]
     public Percent(double fraction)
     {
         IsTrue(fraction >= 0 && fraction <= 1, "Percentage value must be between 0 and 1");
-        percent = fraction * 100;
+        fractionValue = fraction;
     }
 
     public int CompareTo(Percent? other)
@@ -19,6 +28,6 @@ public class Percent : IComparable<Percent>
 
     public override string ToString()
     {
-        return $"{percent}%";
+        return $"{Math.Round(PercentageValue, 1)}%";
     }
 }

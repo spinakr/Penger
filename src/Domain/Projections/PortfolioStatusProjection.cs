@@ -11,11 +11,22 @@ public class PortfolioStatus
     public string PortfolioId { get; set; }
     public string TotalValue { get; set; }
     public Dictionary<string, InvestmentStatus> InvestmentStatuses { get; set; } = new();
+    public Dictionary<string, Percent> DesiredDistribution { get; set; } = new();
+    public Dictionary<string, Percent> ActualDistribution { get; set; } = new();
+    public Dictionary<string, RegisteredInvestment> RegisteredInvestments { get; set; } = new();
+
+
+    public record InvestmentStatus(string InvestmentId, double Amount, decimal Price, decimal Value);
+
+    public record RegisteredInvestment(string InvestmentId, string InvestmentGroup);
 
 }
-public record InvestmentStatus(string InvestmentId, double Amount, decimal Price, decimal Value);
 
-public class PortfolioStatusProjection : INotificationHandler<NewTransactionWasCreated>, INotificationHandler<InvestmentPriceWasUpdated>
+public class PortfolioStatusProjection :
+    INotificationHandler<NewTransactionWasCreated>,
+    INotificationHandler<InvestmentPriceWasUpdated>,
+    INotificationHandler<InvestmentWasRegistered>,
+    INotificationHandler<PortfolioDistributionWasChanged>
 {
 
     private IProjectionStore<string, PortfolioStatus> _projectionStore;
@@ -38,15 +49,9 @@ public class PortfolioStatusProjection : INotificationHandler<NewTransactionWasC
         var newAmount = currentAmount + (@event.TransactionType == TransactionType.Sale.DisplayName ? -1 : 1) * @event.Amount;
         var newPrice = currentStatus is null ? transactionPrice.Value : currentStatus.Price;
 
-        var newInvestmentStatus = new InvestmentStatus(
-            InvestmentId: investmentId,
-            Price: newPrice,
-            Amount: newAmount,
-            Value: newPrice * (decimal)newAmount);
-
-        projection.InvestmentStatuses[investmentId] = newInvestmentStatus;
-
+        AddNewProjectionStatus(projection, investmentId, newAmount, newPrice);
         CalculateTotal(projection);
+        CalculateDistribution(projection);
 
         _projectionStore.Save(@event.PortfolioId, projection);
 
@@ -66,21 +71,54 @@ public class PortfolioStatusProjection : INotificationHandler<NewTransactionWasC
         var currentAmount = currentStatus?.Amount ?? 0;
         var newPrice = transactionPrice.Value;
 
-        var newInvestmentStatus = new InvestmentStatus(
-            InvestmentId: investmentId,
-            Price: newPrice,
-            Amount: currentAmount,
-            Value: newPrice * (decimal)currentAmount);
-
-        projection.InvestmentStatuses[investmentId] = newInvestmentStatus;
+        AddNewProjectionStatus(projection, investmentId, currentAmount, newPrice);
 
         CalculateTotal(projection);
+        CalculateDistribution(projection);
 
         _projectionStore.Save(@event.PortfolioId, projection);
 
         return Task.CompletedTask;
     }
 
+    public Task Handle(PortfolioDistributionWasChanged notification, CancellationToken cancellationToken)
+    {
+        var projection = _projectionStore.GetProjection(notification.PortfolioId);
+        projection.DesiredDistribution = notification.Distribution.ToDictionary(
+            x => x.Key, x => new Percent(x.Value));
+        _projectionStore.Save(notification.PortfolioId, projection);
+        return Task.CompletedTask;
+    }
+
+    public Task Handle(InvestmentWasRegistered notification, CancellationToken cancellationToken)
+    {
+        var projection = _projectionStore.GetProjection(notification.PortfolioId);
+        projection.RegisteredInvestments.Add(notification.InvestmentId,
+            new PortfolioStatus.RegisteredInvestment(notification.InvestmentId, notification.InvestmentGroup));
+        _projectionStore.Save(notification.PortfolioId, projection);
+        return Task.CompletedTask;
+    }
+    private static void AddNewProjectionStatus(PortfolioStatus projection, string investmentId, double newAmount, decimal newPrice)
+    {
+        var newInvestmentStatus = new PortfolioStatus.InvestmentStatus(
+            InvestmentId: investmentId,
+            Price: newPrice,
+            Amount: newAmount,
+            Value: newPrice * (decimal)newAmount);
+
+        projection.InvestmentStatuses[investmentId] = newInvestmentStatus;
+
+        if (newInvestmentStatus.Value < 100) projection.InvestmentStatuses.Remove(investmentId);
+    }
+
+    private static void CalculateDistribution(PortfolioStatus projection)
+    {
+        var totalValue = projection.InvestmentStatuses.Values.Sum(g => g?.Value ?? 0);
+        projection.ActualDistribution = projection.InvestmentStatuses
+            .GroupBy(x => projection.RegisteredInvestments[x.Key].InvestmentGroup)
+            .ToDictionary(x => x.Key, x => new Percent(x.Sum(y => y.Value.Value) / totalValue));
+
+    }
 
     private static void CalculateTotal(PortfolioStatus projection)
     {
@@ -92,5 +130,4 @@ public class PortfolioStatusProjection : INotificationHandler<NewTransactionWasC
             .OrderByDescending(g => g.Value.Value)
             .ToDictionary(g => g.Key, g => g.Value);
     }
-
 }

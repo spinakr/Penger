@@ -7,7 +7,16 @@
 
 <div>
     <h1>Portfolio - @Model.Data.PortfolioId</h1>
-    <p class="big-number">@Model.Data.TotalValue</p>
+    <div class="row">
+        <div class="col">
+            <span class="label"> Total Value</span>
+            <span class="big-number">@Model.Data.TotalValue</span>
+        </div>
+        <div class="col">
+        </div>
+        <div class="col">
+        </div>
+    </div>
     <table>
         <tr>
             <th>
@@ -42,4 +51,45 @@
             </tr>
         }
     </table>
+
+    <hr />
+    <h2>Distribution</h2>
+    <div class="row">
+        <span class="col">
+            <table>
+
+                @foreach (var item in Model.Data.ActualDistribution)
+                {
+                    <tr>
+                        <td>
+                            @item.Key
+                        </td>
+                        <td>
+                            @item.Value.ToString()
+                        </td>
+                    </tr>
+                }
+            </table>
+        </span>
+
+        <span class="col">
+            <table>
+
+                @foreach (var item in Model.Data.DesiredDistribution)
+                {
+                    <tr>
+                        <td>
+                            @item.Key
+                        </td>
+                        <td>
+                            @item.Value.ToString()
+                        </td>
+                    </tr>
+                }
+            </table>
+        </span>
+
+    </div>
+
+
 </div>
