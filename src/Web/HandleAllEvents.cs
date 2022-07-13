@@ -14,7 +14,6 @@ public class HandleAllEvents : IEventHandler<IEvent>
 
     public void Handle(IEvent @event)
     {
-        System.Console.WriteLine($"Handling event: {@event.GetType().Name}");
         _mediator.Publish(@event);
     }
 }

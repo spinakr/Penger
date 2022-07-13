@@ -19,8 +19,8 @@ builder.Services.AddSingleton<IEventStore, EventStore>();
 builder.Services.AddSingleton<IAppendOnlyStore>(new FileAppendOnlyStore("penger-eventstore"));
 builder.Services.AddHostedService<StartupWorker>();
 builder.Services.AddHostedService<PriceWorker>();
-builder.Services.AddSingleton<IProjectionStore<string, PortfolioStatus>>(new FileProjectionStore<string, PortfolioStatus>("penger-eventstore"));
-builder.Services.AddSingleton<IProjectionStore<string, List<RegisteredInvestment>>>(new FileProjectionStore<string, List<RegisteredInvestment>>("penger-eventstore"));
+builder.Services.AddSingleton<IProjectionStore<string, PortfolioStatus>>(new InMemoryProjectionStore<string, PortfolioStatus>());
+builder.Services.AddSingleton<IProjectionStore<string, List<RegisteredInvestment>>>(new InMemoryProjectionStore<string, List<RegisteredInvestment>>());
 
 builder.Services.AddMediatR(typeof(Program));
 builder.Services.AddMediatR(typeof(Portfolio));
@@ -43,3 +43,6 @@ app.UseRouting();
 app.MapRazorPages();
 
 app.Run();
+
+
+

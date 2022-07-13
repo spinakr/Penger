@@ -5,10 +5,10 @@ namespace Domain.Events
 {
     public class NewTransactionWasCreated : IEvent, INotification
     {
-        public NewTransactionWasCreated(string portfoliId, DateTime date, string investmentId, Guid transactionId,
+        public NewTransactionWasCreated(string portfolioId, DateTime date, string investmentId, Guid transactionId,
             double amount, decimal price, decimal fee, string currency, string transactionType)
         {
-            PortfolioId = portfoliId;
+            PortfolioId = portfolioId;
             Date = date;
             InvestmentId = investmentId;
             TransactionId = transactionId;

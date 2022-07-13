@@ -2,6 +2,7 @@ using System.Text.Json;
 using Domain;
 using Domain.ValueObjects;
 using HtmlAgilityPack;
+using MediatR;
 using PocketCqrs.EventStore;
 
 namespace Web;
@@ -10,11 +11,13 @@ public class PriceWorker : BackgroundService
 {
     private IEventStore _eventStore { get; set; }
     private IConfiguration _configuration { get; set; }
+    private IMediator _mediator { get; set; }
 
-    public PriceWorker(IEventStore eventStore, IConfiguration configuration)
+    public PriceWorker(IEventStore eventStore, IConfiguration configuration, IMediator mediator)
     {
         _configuration = configuration;
         _eventStore = eventStore;
+        _mediator = mediator;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)

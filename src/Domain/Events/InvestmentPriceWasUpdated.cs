@@ -6,13 +6,13 @@ namespace Domain.Events;
 public class InvestmentPriceWasUpdated : IEvent, INotification
 {
     public InvestmentPriceWasUpdated(string portfolioId, string investmentId,
-        decimal newNokPrice, decimal newPrice, DateTime date)
+        decimal nokPrice, decimal price, DateTime date)
     {
         PortfolioId = portfolioId;
         InvestmentId = investmentId;
-        NokPrice = newNokPrice;
+        NokPrice = nokPrice;
         Date = date;
-        Price = newPrice;
+        Price = price;
     }
 
     public string PortfolioId { get; }

@@ -109,7 +109,7 @@ public class PortfolioStatusProjection :
     private static void AddNewProjectionStatus(PortfolioStatus projection, string investmentId, double newAmount, decimal newPrice, decimal invested)
     {
         var profitValue = newPrice * (decimal)newAmount - invested;
-        var profit = new Percent(profitValue / invested);
+        var profit = invested == 0 ? new Percent(0.0) : new Percent(profitValue / invested);
         var newInvestmentStatus = new PortfolioStatus.InvestmentStatus(
             InvestmentId: investmentId,
             Price: newPrice,
@@ -142,6 +142,6 @@ public class PortfolioStatusProjection :
         projection.TotalValue = projection.InvestmentStatuses.Values.Sum(g => g?.Value ?? 0);
         projection.TotalProfitValue = projection.InvestmentStatuses.Values.Sum(g => g?.ProfitValue ?? 0);
         var totalInvested = projection.InvestmentStatuses.Values.Sum(g => g?.Invested ?? 0);
-        projection.TotalProfit = new Percent(projection.TotalProfitValue / totalInvested);
+        projection.TotalProfit = totalInvested == 0 ? new Percent(0.0) : new Percent(projection.TotalProfitValue / totalInvested);
     }
 }

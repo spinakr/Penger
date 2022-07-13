@@ -1,4 +1,5 @@
 using Domain;
+using MediatR;
 using PocketCqrs.EventStore;
 
 namespace Web;
@@ -7,10 +8,12 @@ public class StartupWorker : IHostedService, IDisposable
 {
     private Timer _timer;
     private IEventStore _eventStore { get; }
+    private IMediator _mediator { get; }
 
-    public StartupWorker(IEventStore eventStore)
+    public StartupWorker(IEventStore eventStore, IMediator mediator)
     {
         _eventStore = eventStore;
+        _mediator = mediator;
     }
 
     public Task StartAsync(CancellationToken stoppingToken)
@@ -26,6 +29,13 @@ public class StartupWorker : IHostedService, IDisposable
         {
             var port = Portfolio.CreateNew("kofoed");
             _eventStore.AppendToStream(port.Id, port.PendingEvents, 0);
+        }
+
+        var allEvents = _eventStore.LoadAllEvents();
+        System.Console.WriteLine($"{allEvents.Count} events loaded");
+        foreach (var @event in allEvents)
+        {
+            _mediator.Publish(@event).GetAwaiter().GetResult();
         }
     }
 

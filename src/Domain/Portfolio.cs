@@ -59,8 +59,8 @@ public class Portfolio : EventSourcedAggregate
         Append(new InvestmentPriceWasUpdated(
             portfolioId: Id,
             investmentId: investmentId.Value,
-            newPrice: price.Value,
-            newNokPrice: nokPrice.Value,
+            price: price.Value,
+            nokPrice: nokPrice.Value,
             date: DateTime.Now
         ));
 
