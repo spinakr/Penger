@@ -7,10 +7,16 @@
 
 <div>
     <h1>Portfolio - @Model.Data.PortfolioId</h1>
-    <div class="row">
+    <div class="row spaced">
         <div class="col">
-            <span class="label"> Total Value</span>
-            <span class="big-number">@Model.Data.TotalValue</span>
+            <span class="label"> Value</span>
+            <span class="big-number">@Model.Data.TotalValue.ToString("C", new CultureInfo("no-NO"))
+        </div>
+        <div class="col">
+            <span class="label"> Profit</span>
+            <span class="big-number">@Model.Data.TotalProfitValue.ToString("C", new CultureInfo("no-NO"))
+                (@Model.Data.TotalProfit)
+            </span>
         </div>
         <div class="col">
         </div>
@@ -31,6 +37,15 @@
             <th>
                 Value
             </th>
+            <th>
+                Invested
+            </th>
+            <th>
+                Profit
+            </th>
+            <th>
+                Profit %
+            </th>
         </tr>
         @foreach (var item in Model.Data.InvestmentStatuses.Values.OrderByDescending(x => x.Value))
         {
@@ -46,6 +61,15 @@
                 </td>
                 <td>
                     @item.Value.ToString("C", new CultureInfo("no-NO"))
+                </td>
+                <td>
+                    @item.Invested.ToString("C", new CultureInfo("no-NO"))
+                </td>
+                <td>
+                    @item.ProfitValue.ToString("C", new CultureInfo("no-NO"))
+                </td>
+                <td>
+                    @item.Profit
                 </td>
 
             </tr>

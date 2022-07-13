@@ -76,9 +76,11 @@ select {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  justify-content: start;
-  /* justify-content: space-around; */
   align-items: center;
+}
+
+.row.spaced {
+  justify-content: space-around;
 }
 
 .col {
