@@ -20,6 +20,8 @@ public class Percent : IComparable<Percent>
         fractionValue = fraction;
     }
 
+    public static Percent Zero => new Percent(0.0);
+
     public int CompareTo(Percent? other)
     {
         throw new NotImplementedException();

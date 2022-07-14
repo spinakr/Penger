@@ -8,14 +8,10 @@ public class Portfolio : EventSourcedAggregate
     public Portfolio() { }
 
     public Portfolio(IEnumerable<IEvent> events) : base(events) { }
-    public Dictionary<InvestmentGroup, Percent> DesiredDistribution { get; private set; }
-    public List<Investment> RegisteredInvestments { get; set; } = new List<Investment>();
-    public List<Transaction> Transactions { get; private set; } = new List<Transaction>();
+    private Dictionary<InvestmentGroup, Percent> DesiredDistribution = new Dictionary<InvestmentGroup, Percent>();
+    public List<Investment> RegisteredInvestments = new();
+    public List<Transaction> Transactions { get; private set; } = new();
     private Dictionary<InvestmentId, DateTime> _lastInvestmentPriceUpdate = new Dictionary<InvestmentId, DateTime>();
-
-
-
-
 
     public static Portfolio CreateNew(string name)
     {
@@ -47,7 +43,7 @@ public class Portfolio : EventSourcedAggregate
         ));
     }
 
-    public void UpdatePrice(InvestmentId investmentId, NokPrice nokPrice, Price price)
+    public void UpdatePrice(InvestmentId investmentId, NokMoney nokPrice, Money price)
     {
         var investment = RegisteredInvestments.FirstOrDefault(i => i.Id == investmentId);
         if (investment is null) throw new InvalidDataException("Investment not found");
@@ -114,8 +110,8 @@ public class Portfolio : EventSourcedAggregate
             new TransactionId(@event.TransactionId),
             @event.Date,
             new Amount(@event.Amount),
-            new Price(@event.Price, @event.Currency),
-            new Price(@event.Fee, @event.Currency),
+            new Money(@event.Price, @event.Currency),
+            new Money(@event.Fee, @event.Currency),
             Enumeration.FromDisplayName<TransactionType>(@event.TransactionType)
         ));
 

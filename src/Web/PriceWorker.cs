@@ -50,7 +50,7 @@ public class PriceWorker : BackgroundService
                     .First();
 
                 var newPriceValue = decimal.Parse(priceNode.InnerText);
-                var newPrice = new Price(newPriceValue, investment.Currency);
+                var newPrice = new Money(newPriceValue, investment.Currency);
                 var newNokPrice = investment.Currency.DisplayName switch
                 {
                     "USD" => newPrice.ToNok(usdToNok),
@@ -60,10 +60,11 @@ public class PriceWorker : BackgroundService
                 };
                 portfolio.UpdatePrice(investment.Id, newNokPrice, newPrice);
 
-            } // end foreach
+            }
 
             _eventStore.AppendToStream("kofoed", portfolio.PendingEvents, stream.Version);
 
-        } while (await timer.WaitForNextTickAsync(stoppingToken));
+        }
+        while (await timer.WaitForNextTickAsync(stoppingToken));
     }
 }

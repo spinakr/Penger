@@ -98,8 +98,8 @@ public class Create : PageModel
                 new TransactionId(),
                 cmd.Date,
                 new Amount(cmd.Amount ?? 0),
-                new Price(cmd.Price ?? 0, Enumeration.FromDisplayName<CurrencyType>(cmd.Currency)),
-                new Price(cmd.Fee, Enumeration.FromDisplayName<CurrencyType>(cmd.Currency)),
+                new Money(cmd.Price ?? 0, Enumeration.FromDisplayName<CurrencyType>(cmd.Currency)),
+                new Money(cmd.Fee, Enumeration.FromDisplayName<CurrencyType>(cmd.Currency)),
                 string.IsNullOrWhiteSpace(cmd.Type) ? null : Enumeration.FromDisplayName<TransactionType>(cmd.Type)
             );
             portfolio.AddTransaction(newTransaction);

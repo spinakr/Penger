@@ -16,8 +16,8 @@ public class TransactionTests
             new TransactionId(),
             DateTime.Now,
             amount: new Amount(100),
-            price: new Price(50.5m, CurrencyType.NOK),
-            fee: new Price(5, CurrencyType.NOK)
+            price: new Money(50.5m, CurrencyType.NOK),
+            fee: new Money(5, CurrencyType.NOK)
         ));
 
         port.Transactions.Count.Should().Be(1);

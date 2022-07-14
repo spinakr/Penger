@@ -9,7 +9,7 @@ namespace Web.Pages;
 public class Index : PageModel
 {
     private readonly IMediator _messaging;
-    public PortfolioStatus Data { get; set; }
+    public PortfolioProjection Data { get; set; }
 
     public Index(IMediator messaging) => _messaging = messaging;
 
@@ -18,24 +18,24 @@ public class Index : PageModel
         Data = await _messaging.Send(query);
     }
 
-    public class Query : IRequest<PortfolioStatus>
+    public class Query : IRequest<PortfolioProjection>
     {
         public string PortfolioId { get; set; }
     }
 
-    public class QueryHandler : IRequestHandler<Query, PortfolioStatus>
+    public class QueryHandler : IRequestHandler<Query, PortfolioProjection>
     {
         private IEventStore _eventStore { get; }
-        private IProjectionStore<string, PortfolioStatus> _projectionStore { get; }
+        private IProjectionStore<string, PortfolioProjection> _projectionStore { get; }
         public QueryHandler(
             IEventStore eventStore,
-            IProjectionStore<string, PortfolioStatus> projectionStore)
+            IProjectionStore<string, PortfolioProjection> projectionStore)
         {
             _eventStore = eventStore;
             _projectionStore = projectionStore;
         }
 
-        public Task<PortfolioStatus> Handle(Query query, CancellationToken token)
+        public Task<PortfolioProjection> Handle(Query query, CancellationToken token)
         {
             var portfolioProjection = _projectionStore.GetProjection(query.PortfolioId);
             return Task.FromResult(portfolioProjection);

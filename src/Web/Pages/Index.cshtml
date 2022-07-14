@@ -10,11 +10,11 @@
     <div class="row spaced">
         <div class="col">
             <span class="label"> Value</span>
-            <span class="big-number">@Model.Data.TotalValue.ToString("C", new CultureInfo("no-NO")) </span>
+            <span class="big-number">@Model.Data.TotalValue </span>
         </div>
         <div class="col">
             <span class="label"> Profit</span>
-            <span class="big-number">@Model.Data.TotalProfitValue.ToString("C", new CultureInfo("no-NO"))
+            <span class="big-number">@Model.Data.TotalProfitValue
                 (@Model.Data.TotalProfit)
             </span>
         </div>
@@ -54,19 +54,19 @@
                     @item.InvestmentId
                 </td>
                 <td>
-                    @Math.Round(@item.Amount,2)
+                    @item.Amount
                 </td>
                 <td>
-                    @item.Price.ToString("C", new CultureInfo("no-NO"))
+                    @item.Price
                 </td>
                 <td>
-                    @item.Value.ToString("C", new CultureInfo("no-NO"))
+                    @item.Value
                 </td>
                 <td>
-                    @item.Invested.ToString("C", new CultureInfo("no-NO"))
+                    @item.Invested
                 </td>
                 <td>
-                    @item.ProfitValue.ToString("C", new CultureInfo("no-NO"))
+                    @item.ProfitValue
                 </td>
                 <td>
                     @item.Profit

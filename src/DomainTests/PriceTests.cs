@@ -14,7 +14,7 @@ public class PriceTests
     [Test]
     public void Price_PositiveValie_ShouldConstruct()
     {
-        var price = new Price(new Decimal(101.1), CurrencyType.NOK);
+        var price = new Money(new Decimal(101.1), CurrencyType.NOK);
         price.Value.Should().Be(new decimal(101.1));
         price.Currency.Should().Be(CurrencyType.NOK);
     }
@@ -23,7 +23,7 @@ public class PriceTests
     public void Price_NullValue_ShouldThrow()
     {
         ((Action)(() =>
-            new Price(-1, CurrencyType.NOK)
+            new Money(-1, CurrencyType.NOK)
         )).Should().Throw<ArgumentException>();
     }
 
@@ -31,7 +31,7 @@ public class PriceTests
     public void Price_CurrencyNull_ShouldThrow()
     {
         ((Action)(() =>
-            new Price(1, (CurrencyType)null)
+            new Money(1, (CurrencyType)null)
         )).Should().Throw<ArgumentException>();
     }
 }

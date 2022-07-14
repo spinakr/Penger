@@ -21,7 +21,7 @@ public class PercentTests
     public void ConstructedFromDecimal_ValueGreatherThan1_ShouldThrow()
     {
         ((Action)(() =>
-        new Percent(1.2))).Should().Throw<ArgumentException>();
+        new Percent(1.2))).Should().NotThrow<ArgumentException>();
     }
 
     [Test]

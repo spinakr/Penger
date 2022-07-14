@@ -1,4 +1,5 @@
 using Domain;
+using Domain.Events;
 using Domain.ValueObjects;
 using FluentAssertions;
 
@@ -52,18 +53,60 @@ public class PortfolioTests
     }
 
 
-    // [Test]
-    // public void TotalPortfolioValue_SimpleBuyAndSell_ShouldCalculateCorrectly()
-    // {
-    //     var port = Portfolio.CreateNew("TEST");
-    //     port.RegisterInvestment(new Investment(new InvestmentId("DNB Global Indeks"), InvestmentType.Fund, InvestmentGroup.GlobalIndex));
-    //     port.RegisterInvestment(new Investment(new InvestmentId("KLP fremvoksende marked indeks 2"), InvestmentType.Fund, InvestmentGroup.GlobalIndex));
-    //     port.RegisterInvestment(new Investment(new InvestmentId("Gold"), InvestmentType.Commodity, InvestmentGroup.Gold));
+    [Test]
+    public void RegisterInvestment_Duplicate_ShouldThrow()
+    {
+        var port = Portfolio.CreateNew("TEST");
 
-    //     port.AddTransaction(Transaction.CreateNew(new InvestmentId("DNB Global Indeks"), new DateTime(2022, 1, 1), 10, new Price(100, CurrencyType.NOK), Price.ZERO)); //1000 NOK
-    //     port.AddTransaction(Transaction.CreateNew(new InvestmentId("KLP fremvoksende marked indeks 2"), new DateTime(2022, 1, 1), 9, new Price(200, CurrencyType.NOK), Price.ZERO)); // 1800 NOK
-    //     port.AddTransaction(Transaction.CreateNew(new InvestmentId("Gold"), new DateTime(2022, 1, 1), 2, new Price(1000, CurrencyType.NOK), Price.ZERO)); // 2000 NOK
-    //     port.AddTransaction(Transaction.CreateNew(new InvestmentId("DNB Global Indeks"), new DateTime(2022, 1, 1), 10, new Price(200, CurrencyType.NOK), Price.ZERO, TransactionType.Sale)); // -1000 NOK // SUM : 2900 NOK
+        port.RegisterInvestment(new Investment(
+            id: new InvestmentId("1"),
+            type: InvestmentType.Stock,
+            group: InvestmentGroup.GlobalIndex,
+            symbol: new Symbol("AAPL"),
+            currency: CurrencyType.NOK));
 
-    // }
+        ((Action)(() =>
+
+        port.RegisterInvestment(new Investment(
+            id: new InvestmentId("1"),
+            type: InvestmentType.Stock,
+            group: InvestmentGroup.GlobalIndex,
+            symbol: new Symbol("AAPL"),
+            currency: CurrencyType.NOK))
+
+        )).Should().Throw<InvalidDataException>();
+    }
+
+    [Test]
+    public void UpdatePrice_KnownInvestment_ShouldUpdatePrice()
+    {
+        var port = Portfolio.CreateNew("TEST");
+
+        port.RegisterInvestment(new Investment(
+            id: new InvestmentId("1"),
+            type: InvestmentType.Stock,
+            group: InvestmentGroup.GlobalIndex,
+            symbol: new Symbol("AAPL"),
+            currency: CurrencyType.NOK));
+
+
+        port.UpdatePrice(new InvestmentId("1"), new NokMoney(100), new Money(100, CurrencyType.NOK));
+
+        port.PendingEvents.Count.Should().Be(3);
+        (port.PendingEvents.Last() as InvestmentPriceWasUpdated).InvestmentId.Should().Be("1");
+    }
+
+    [Test]
+    public void UpdatePrice_UnknownInvestment_ShouldThrow()
+    {
+        var port = Portfolio.CreateNew("TEST");
+
+        ((Action)(() =>
+
+        port.UpdatePrice(new InvestmentId("1"), new NokMoney(100), new Money(100, CurrencyType.NOK))
+
+        )).Should().Throw<InvalidDataException>();
+    }
+
+
 }
