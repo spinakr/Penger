@@ -1,16 +1,17 @@
 using Domain.Events;
+using Domain.ValueObjects;
 using MediatR;
 using PocketCqrs.Projections;
 
 namespace Domain.Projections;
 
-public record RegisteredInvestment(string InvestmentId, string InvestmentType, string InvestmentGroup, string Symbol, string Currency);
+public record RegisteredInvestmentsProjection(InvestmentId InvestmentId, InvestmentType InvestmentType, InvestmentGroup InvestmentGroup, Symbol Symbol, CurrencyType Currency);
 
-public class RegisteredInvestmentsProjection : INotificationHandler<InvestmentWasRegistered>
+public class RegisteredInvestmentsProjector : INotificationHandler<InvestmentWasRegistered>
 {
-    private IProjectionStore<string, List<RegisteredInvestment>> _projectionStore;
+    private IProjectionStore<string, List<RegisteredInvestmentsProjection>> _projectionStore;
 
-    public RegisteredInvestmentsProjection(IProjectionStore<string, List<RegisteredInvestment>> projectionStore)
+    public RegisteredInvestmentsProjector(IProjectionStore<string, List<RegisteredInvestmentsProjection>> projectionStore)
     {
         _projectionStore = projectionStore;
     }
@@ -19,7 +20,12 @@ public class RegisteredInvestmentsProjection : INotificationHandler<InvestmentWa
     {
         var projection = _projectionStore.GetProjection(@event.PortfolioId);
 
-        projection.Add(new RegisteredInvestment(@event.InvestmentId, @event.InvestmentType, @event.InvestmentGroup, @event.Symbol, @event.Currency));
+        projection.Add(new RegisteredInvestmentsProjection(
+            new InvestmentId(@event.InvestmentId),
+            Enumeration.FromDisplayName<InvestmentType>(@event.InvestmentType),
+            Enumeration.FromDisplayName<InvestmentGroup>(@event.InvestmentGroup),
+            new Symbol(@event.Symbol),
+            Enumeration.FromDisplayName<CurrencyType>(@event.Currency)));
 
         _projectionStore.Save(@event.PortfolioId, projection);
 

@@ -1,9 +1,11 @@
 using System.Text.Json;
 using Domain;
+using Domain.Projections;
 using Domain.ValueObjects;
 using HtmlAgilityPack;
 using MediatR;
 using PocketCqrs.EventStore;
+using PocketCqrs.Projections;
 
 namespace Web;
 
@@ -12,12 +14,14 @@ public class PriceWorker : BackgroundService
     private IEventStore _eventStore { get; set; }
     private IConfiguration _configuration { get; set; }
     private IMediator _mediator { get; set; }
+    private IProjectionStore<string, List<RegisteredInvestmentsProjection>> _projectionStore { get; set; }
 
-    public PriceWorker(IEventStore eventStore, IConfiguration configuration, IMediator mediator)
+    public PriceWorker(IEventStore eventStore, IConfiguration configuration, IMediator mediator, IProjectionStore<string, List<RegisteredInvestmentsProjection>> projectionStore)
     {
-        _configuration = configuration;
         _eventStore = eventStore;
+        _configuration = configuration;
         _mediator = mediator;
+        _projectionStore = projectionStore;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -29,14 +33,15 @@ public class PriceWorker : BackgroundService
             var stream = _eventStore.LoadEventStream("kofoed");
             if (!stream.Events.Any()) continue;
             var portfolio = new Portfolio(stream.Events);
-            HttpClient client = new HttpClient();
+            var investments = _projectionStore.GetProjection("kofoed");
 
+            HttpClient client = new HttpClient();
             var currencyString = await client.GetStringAsync(_configuration["CurrencyServiceUrl"]);
             //parse json string and get value of "rates"
             var currencyJson = JsonSerializer.Deserialize<JsonElement>(currencyString);
             var usdToNok = 1 / currencyJson.GetProperty("rates").GetProperty("USD").GetDouble();
             var eurToNok = 1 / currencyJson.GetProperty("rates").GetProperty("EUR").GetDouble();
-            foreach (var investment in portfolio.RegisteredInvestments)
+            foreach (var investment in investments)
             {
                 var url = string.Format(_configuration.GetValue<string>("PriceServiceUrlTemplate"), investment.Symbol.Value);
                 var html = await client.GetStringAsync(url);
@@ -58,7 +63,7 @@ public class PriceWorker : BackgroundService
                     "NOK" => newPrice.ToNok(1),
                     _ => throw new InvalidDataException($"Unknown currency {investment.Currency.DisplayName}")
                 };
-                portfolio.UpdatePrice(investment.Id, newNokPrice, newPrice);
+                portfolio.UpdatePrice(investment.InvestmentId, newNokPrice, newPrice);
 
             }
 

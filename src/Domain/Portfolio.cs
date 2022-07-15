@@ -8,10 +8,10 @@ public class Portfolio : EventSourcedAggregate
     public Portfolio() { }
 
     public Portfolio(IEnumerable<IEvent> events) : base(events) { }
-    private Dictionary<InvestmentGroup, Percent> DesiredDistribution = new Dictionary<InvestmentGroup, Percent>();
-    public List<Investment> RegisteredInvestments = new();
+    private Dictionary<InvestmentGroup, Percent> DesiredDistribution = new();
+    private List<Investment> RegisteredInvestments { get; set; } = new();
     public List<Transaction> Transactions { get; private set; } = new();
-    private Dictionary<InvestmentId, DateTime> _lastInvestmentPriceUpdate = new Dictionary<InvestmentId, DateTime>();
+    private Dictionary<InvestmentId, DateTime> _lastInvestmentPriceUpdate = new();
 
     public static Portfolio CreateNew(string name)
     {

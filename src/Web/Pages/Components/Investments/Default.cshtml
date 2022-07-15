@@ -1,4 +1,4 @@
-@model List<Domain.Projections.RegisteredInvestment>
+@model List<Domain.Projections.RegisteredInvestmentsProjection>
 
 <table class="investment-list">
     <tr>
@@ -23,20 +23,20 @@
         <tr>
             <td>
                 <a asp-page="/Investments/">
-                    @Html.DisplayFor(modelItem => investment.InvestmentId)
+                    @investment.InvestmentId
                 </a>
             </td>
             <td>
-                @Html.DisplayFor(modelItem => investment.InvestmentGroup)
+                @investment.InvestmentGroup
             </td>
             <td>
-                @Html.DisplayFor(modelItem => investment.InvestmentType)
+                @investment.InvestmentType
             </td>
             <td>
-                @Html.DisplayFor(modelItem => investment.Currency)
+                @investment.Currency
             </td>
             <td>
-                @Html.DisplayFor(modelItem => investment.Symbol)
+                @investment.Symbol
             </td>
         </tr>
     }

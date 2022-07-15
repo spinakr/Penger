@@ -5,7 +5,7 @@ namespace Web.ViewComponents;
 
 public class InvestmentsViewComponent : ViewComponent
 {
-    public async Task<IViewComponentResult> InvokeAsync(List<RegisteredInvestment> investments)
+    public async Task<IViewComponentResult> InvokeAsync(List<RegisteredInvestmentsProjection> investments)
     {
         return View(investments);
     }

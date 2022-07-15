@@ -32,14 +32,14 @@ public class Create : PageModel
 
     public async Task<IActionResult> OnPostAsync()
     {
-        var model = new List<RegisteredInvestment>
+        var model = new List<RegisteredInvestmentsProjection>
         {
             await _messaging.Send(Data)
         };
         return ViewComponent("Investments", model);
     }
 
-    public class Command : IRequest<RegisteredInvestment>
+    public class Command : IRequest<RegisteredInvestmentsProjection>
     {
         public string PortfolioId { get; set; }
         public string InvestmentId { get; set; }
@@ -49,7 +49,7 @@ public class Create : PageModel
         public string Currency { get; set; }
     }
 
-    public class CommandHandler : IRequestHandler<Command, RegisteredInvestment>
+    public class CommandHandler : IRequestHandler<Command, RegisteredInvestmentsProjection>
     {
         public CommandHandler(IEventStore eventStore)
         {
@@ -58,7 +58,7 @@ public class Create : PageModel
 
         private IEventStore _eventStore { get; }
 
-        public Task<RegisteredInvestment> Handle(Command cmd, CancellationToken token)
+        public Task<RegisteredInvestmentsProjection> Handle(Command cmd, CancellationToken token)
         {
             var stream = _eventStore.LoadEventStream(cmd.PortfolioId);
             var portfolio = new Portfolio(stream.Events);
@@ -68,7 +68,12 @@ public class Create : PageModel
 
             _eventStore.AppendToStream(portfolio.Id.ToString(), portfolio.PendingEvents, stream.Version);
 
-            return Task.FromResult(new RegisteredInvestment(cmd.InvestmentId, cmd.InvestmentType, cmd.InvestmentGroup, cmd.Symbol, cmd.Currency));
+            return Task.FromResult(new RegisteredInvestmentsProjection(
+                new InvestmentId(cmd.InvestmentId),
+                Enumeration.FromDisplayName<InvestmentType>(cmd.InvestmentType),
+                Enumeration.FromDisplayName<InvestmentGroup>(cmd.InvestmentGroup),
+                new Symbol(cmd.Symbol),
+                Enumeration.FromDisplayName<CurrencyType>(cmd.Currency)));
         }
     }
 }

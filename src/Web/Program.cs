@@ -20,7 +20,7 @@ builder.Services.AddSingleton<IAppendOnlyStore>(new FileAppendOnlyStore("penger-
 builder.Services.AddHostedService<StartupWorker>();
 builder.Services.AddHostedService<PriceWorker>();
 builder.Services.AddSingleton<IProjectionStore<string, PortfolioProjection>>(new InMemoryProjectionStore<string, PortfolioProjection>());
-builder.Services.AddSingleton<IProjectionStore<string, List<RegisteredInvestment>>>(new InMemoryProjectionStore<string, List<RegisteredInvestment>>());
+builder.Services.AddSingleton<IProjectionStore<string, List<RegisteredInvestmentsProjection>>>(new InMemoryProjectionStore<string, List<RegisteredInvestmentsProjection>>());
 
 builder.Services.AddMediatR(typeof(Program));
 builder.Services.AddMediatR(typeof(Portfolio));

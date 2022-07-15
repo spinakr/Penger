@@ -48,10 +48,10 @@ public class PortfolioProjector :
         var currentStatus = projection.InvestmentStatuses.GetValueOrDefault(investmentId);
         var currentAmount = currentStatus?.Amount ?? new Amount(0);
         var currentInvested = currentStatus?.Invested ?? new Money(0, transactionCurrency);
-        var newInvested =@event.TransactionType == TransactionType.Sale.DisplayName ?
+        var newInvested = @event.TransactionType == TransactionType.Sale.DisplayName ?
             currentInvested - new Money(transactionPrice.Value, transactionCurrency) * new Amount(@event.Amount) :
             currentInvested + new Money(transactionPrice.Value, transactionCurrency) * new Amount(@event.Amount);
-        var newAmount = @event.TransactionType == TransactionType.Sale.DisplayName ? 
+        var newAmount = @event.TransactionType == TransactionType.Sale.DisplayName ?
             currentAmount - new Amount(@event.Amount) : currentAmount + new Amount(@event.Amount);
         var newPrice = currentStatus is null ? transactionPrice : currentStatus.Price;
 

@@ -1,10 +1,12 @@
 using Domain;
+using Domain.Projections;
 using Domain.ValueObjects;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using PocketCqrs.EventStore;
+using PocketCqrs.Projections;
 
 namespace Web.Pages.Transactions;
 
@@ -52,17 +54,18 @@ public class Create : PageModel
 
     public class InvestmentQueryHandler : IRequestHandler<Query, Model>
     {
-        public InvestmentQueryHandler(IEventStore eventStore)
+        public InvestmentQueryHandler(IEventStore eventStore, IProjectionStore<string, List<RegisteredInvestmentsProjection>> investmentProjectionStore)
         {
             _eventStore = eventStore;
+            _investmentProjectionStore = investmentProjectionStore;
         }
 
-        private IEventStore _eventStore { get; }
+        private IEventStore _eventStore;
+        private IProjectionStore<string, List<RegisteredInvestmentsProjection>> _investmentProjectionStore;
 
         public Task<Model> Handle(Query query, CancellationToken token)
         {
-            var stream = _eventStore.LoadEventStream(query.portfolioId);
-            var portfolio = new Portfolio(stream.Events);
+            var investments = _investmentProjectionStore.GetProjection(query.portfolioId);
             return Task.FromResult(new Model
             {
                 command = new Command
@@ -71,7 +74,7 @@ public class Create : PageModel
                     Date = DateTime.Now,
                     Fee = 0,
                 },
-                InvestmentOptions = portfolio.RegisteredInvestments.Select(i => new SelectListItem(i.Id.ToString(), i.Id.ToString())).ToList()
+                InvestmentOptions = investments.Select(i => new SelectListItem(i.InvestmentId.Value, i.InvestmentId.Value)).ToList()
             });
         }
     }

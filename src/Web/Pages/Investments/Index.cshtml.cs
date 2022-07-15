@@ -14,7 +14,7 @@ public class Index : PageModel
 
     public record Model
     {
-        public List<RegisteredInvestment> Investments { get; set; }
+        public List<RegisteredInvestmentsProjection> Investments { get; set; }
     }
 
     public class Query : IRequest<Model>
@@ -29,8 +29,8 @@ public class Index : PageModel
 
     public class QueryHandler : IRequestHandler<Query, Model>
     {
-        private IProjectionStore<string, List<RegisteredInvestment>> _projectionStore;
-        public QueryHandler(IProjectionStore<string, List<RegisteredInvestment>> projectionStore)
+        private IProjectionStore<string, List<RegisteredInvestmentsProjection>> _projectionStore;
+        public QueryHandler(IProjectionStore<string, List<RegisteredInvestmentsProjection>> projectionStore)
         {
             _projectionStore = projectionStore;
         }
