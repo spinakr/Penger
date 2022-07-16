@@ -1,0 +1,23 @@
+@page "{portfolioId=kofoed}"
+@model Distribution.Index
+@{
+    ViewData["Title"] = "Index";
+}
+
+<div>
+    <h1>Investments </h1>
+    <a asp-page="/Distribution/Update" up-layer="new" class="button-link">Update</a>
+
+    <div class="row">
+        <div class="col">
+            @await Component.InvokeAsync("Distribution", Model.Data.DesiredDistribution)
+        </div>
+        <div class="col">
+            @await Component.InvokeAsync("Distribution", Model.Data.ActualDistribution)
+        </div>
+    </div>
+    <table>
+
+    </table>
+
+</div>

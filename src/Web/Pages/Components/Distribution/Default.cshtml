@@ -1,0 +1,16 @@
+@model Dictionary<Domain.ValueObjects.InvestmentGroup, Domain.ValueObjects.Percent>
+
+<table class="distribution-table">
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @item.Key
+            </td>
+            <td>
+                @item.Value.ToString()
+            </td>
+        </tr>
+    }
+</table>

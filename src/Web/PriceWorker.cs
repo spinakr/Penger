@@ -30,6 +30,7 @@ public class PriceWorker : BackgroundService
 
         do
         {
+            if (_configuration.GetValue<bool>("EnablePriceUpdates") == false) continue;
             var stream = _eventStore.LoadEventStream("kofoed");
             if (!stream.Events.Any()) continue;
             var portfolio = new Portfolio(stream.Events);
@@ -37,10 +38,11 @@ public class PriceWorker : BackgroundService
 
             HttpClient client = new HttpClient();
             var currencyString = await client.GetStringAsync(_configuration["CurrencyServiceUrl"]);
-            //parse json string and get value of "rates"
             var currencyJson = JsonSerializer.Deserialize<JsonElement>(currencyString);
             var usdToNok = 1 / currencyJson.GetProperty("rates").GetProperty("USD").GetDouble();
             var eurToNok = 1 / currencyJson.GetProperty("rates").GetProperty("EUR").GetDouble();
+
+            System.Console.WriteLine("Updating prices...");
             foreach (var investment in investments)
             {
                 var url = string.Format(_configuration.GetValue<string>("PriceServiceUrlTemplate"), investment.Symbol.Value);

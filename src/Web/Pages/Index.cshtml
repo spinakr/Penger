@@ -79,41 +79,11 @@
     <hr />
     <h2>Distribution</h2>
     <div class="row">
-        <span class="col">
-            <table>
-
-                @foreach (var item in Model.Data.ActualDistribution)
-                {
-                    <tr>
-                        <td>
-                            @item.Key
-                        </td>
-                        <td>
-                            @item.Value.ToString()
-                        </td>
-                    </tr>
-                }
-            </table>
-        </span>
-
-        <span class="col">
-            <table>
-
-                @foreach (var item in Model.Data.DesiredDistribution)
-                {
-                    <tr>
-                        <td>
-                            @item.Key
-                        </td>
-                        <td>
-                            @item.Value.ToString()
-                        </td>
-                    </tr>
-                }
-            </table>
-        </span>
-
+        <div class="col">
+            @await Component.InvokeAsync("Distribution", Model.Data.DesiredDistribution)
+        </div>
+        <div class="col">
+            @await Component.InvokeAsync("Distribution", Model.Data.ActualDistribution)
+        </div>
     </div>
-
-
 </div>

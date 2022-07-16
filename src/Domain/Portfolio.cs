@@ -1,5 +1,6 @@
 ﻿using Domain.Events;
 using Domain.ValueObjects;
+using Newtonsoft.Json;
 using PocketCqrs;
 
 namespace Domain;
@@ -23,6 +24,7 @@ public class Portfolio : EventSourcedAggregate
 
     public void ChangeDistribution(Dictionary<InvestmentGroup, Percent> distribution)
     {
+        System.Console.WriteLine(JsonConvert.SerializeObject(distribution));
         if (distribution.Values.Sum(v => v.Fraction) != 1) throw new InvalidDataException("Distribution must sum to exactly 100%");
         if (distribution.Keys.GroupBy(x => x.Value).Any(x => x.Count() > 1)) throw new InvalidDataException("Distribution can only have one of each investment");
 
@@ -50,7 +52,6 @@ public class Portfolio : EventSourcedAggregate
         if (investment.Currency != price.Currency) throw new InvalidDataException("Currency mismatch");
 
         var lastUpdate = _lastInvestmentPriceUpdate.TryGetValue(investmentId, out var lastUpdateTime) ? lastUpdateTime : DateTime.MinValue;
-        if (lastUpdate.AddDays(1) > DateTime.Now) return;
 
         Append(new InvestmentPriceWasUpdated(
             portfolioId: Id,

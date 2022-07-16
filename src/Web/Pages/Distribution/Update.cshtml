@@ -1,0 +1,35 @@
+@page "{portfolioId=kofoed}"
+@model Distribution.Update
+@{
+    ViewData["Title"] = "Update Distribution";
+}
+
+<div>
+    <h1>Update Distribution </h1>
+
+    <form method="post" up-target=".distribution-table" up-layer="root">
+        <h3>Portfolio: @Model.Data.PortfolioId</h3>
+        @Html.HiddenFor(x => x.Data.PortfolioId)
+
+        <table>
+
+            @foreach (var key in Model.Data.Distribution.Keys)
+            {
+                <tr>
+                    <td>
+                        @key
+                    </td>
+                    <td>
+                        <input asp-for="Data.Distribution[key]" type="number" min="0" max="100" step="0.5" />
+                    </td>
+                </tr>
+            }
+        </table>
+
+        <br />
+        <div>
+            <input type="submit" value="Save" class="btn btn-primary" />
+            <a asp-page="/Distribution/Index">Back</a>
+        </div>
+    </form>
+</div>
