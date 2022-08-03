@@ -17,8 +17,8 @@
             <input asp-for="Data.command.Date" type="Date" placeholder="Date" />
         </div>
         <div>
-            <input asp-for="Data.command.Amount.Value" type="text" placeholder="Amount" required
-                pattern="^[1-9]\d*(\,\d+)?$" title="Valid decimal number">
+            <input asp-for="Data.command.Amount" type="text" placeholder="Amount" required pattern="^[1-9]\d*(\,\d+)?$"
+                title="Valid decimal number">
         </div>
         <div>
             <input asp-for="Data.command.Price" type="text" placeholder="Price" required pattern="^[1-9]\d*(\,\d+)?$" />
